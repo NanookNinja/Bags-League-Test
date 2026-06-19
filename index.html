@@ -264,6 +264,9 @@ th{padding:7px 9px;font-size:10px}td{padding:7px 9px;font-size:12px}.pill{border
 .fixed-bracket-label.losers{color:#9a3412;border-color:#f97316}
 .fixed-game{position:absolute;width:190px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;padding:6px;box-shadow:0 3px 9px rgba(15,23,42,.10);z-index:3}
 .fixed-game.ready{border-color:#60a5fa}.fixed-game.complete{border-color:#22c55e;background:#f0fdf4}.fixed-game.optional{border-style:dashed}
+.fixed-game.not-needed{opacity:.32;filter:grayscale(.75);border-color:#ef4444;background:#fee2e2;pointer-events:none}
+.fixed-game.not-needed::after{content:"";position:absolute;left:-8%;top:50%;width:116%;height:5px;border-radius:999px;background:#dc2626;transform:rotate(-24deg);box-shadow:0 1px 3px rgba(127,29,29,.45);z-index:8}
+.fixed-game.not-needed::before{content:"NOT NEEDED";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-24deg);padding:3px 7px;border-radius:5px;background:#dc2626;color:#fff;font-size:9px;font-weight:900;letter-spacing:.05em;z-index:9;white-space:nowrap}
 .fixed-game-title{display:flex;justify-content:space-between;gap:5px;font-size:9px;font-weight:900;text-transform:uppercase;color:#64748b;margin-bottom:5px;padding:0 2px}
 .fixed-team-slot{display:flex;width:100%;min-height:39px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;border:0;border-radius:7px;padding:6px 8px;margin-top:4px;background:#f1f5f9;color:#172033;font:inherit;font-weight:800;text-align:left}
 button.fixed-team-slot{cursor:pointer}.fixed-team-slot:disabled{cursor:default;opacity:1}.fixed-team-slot.pending{color:#94a3b8;font-style:italic}.fixed-team-slot.win{background:#dcfce7;color:#166534}.fixed-team-slot.lose{background:#ffedd5;color:#9a3412}
@@ -1445,7 +1448,9 @@ function renderFixedTeamSlot(divKey, div, def, source, team, winner){
 function renderFixedGame(divKey, div, def){
   var teams = getFixedParticipants(div, def), game = div.games[def.id] || {winner:''};
   var needed = isFixedGameNeeded(div, def), ready = needed && teams[0] && teams[1];
-  var cls = 'fixed-game' + (ready ? ' ready' : '') + (game.winner ? ' complete' : '') + (def.optional ? ' optional' : '');
+  var game18Complete = !!(div.games && div.games[18] && div.games[18].winner);
+  var notNeeded = !!(def.optional && game18Complete && !needed);
+  var cls = 'fixed-game' + (ready ? ' ready' : '') + (game.winner ? ' complete' : '') + (def.optional ? ' optional' : '') + (notNeeded ? ' not-needed' : '');
   var side = def.side === 'W' ? 'Winner' : def.side === 'L' ? 'Loser' : 'Final';
   var pos = fixedGamePosition(def);
   return '<div class="' + cls + '" data-game-id="' + def.id + '" style="left:' + pos.x + 'px;top:' + pos.y + 'px">'
@@ -1470,6 +1475,7 @@ function drawFixedBracketLines(divKey){
     var gameId = target.getAttribute('data-source-game'); if (!gameId) return;
     var type = target.getAttribute('data-source-type');
     if (type !== 'winner') return;
+    if (target.closest('.fixed-game.not-needed')) return;
     var source = board.querySelector('.fixed-game[data-game-id="' + gameId + '"]'); if (!source) return;
     var a = source.getBoundingClientRect(), b = target.getBoundingClientRect();
     var x1 = a.right - boardRect.left, y1 = a.top + a.height/2 - boardRect.top;
