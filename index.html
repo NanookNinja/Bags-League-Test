@@ -236,9 +236,12 @@ th{padding:7px 9px;font-size:10px}td{padding:7px 9px;font-size:12px}.pill{border
 .bracket-swipe-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#eef4fb;border-top:1px solid #dbe3ef}
 .bracket-swipe-nav span{font-size:10px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
 .bracket-swipe-nav button{width:38px;height:32px;border:0;border-radius:9px;background:#1F3864;color:#fff;font-size:18px;font-weight:900;cursor:pointer}
-.playoff-rounds-scroll{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,92%);gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:10px;background:#eaf1f9;scrollbar-width:none}
+.playoff-rounds-scroll{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,86%);gap:54px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:10px;background:#eaf1f9;scrollbar-width:none;position:relative}
 .playoff-rounds-scroll::-webkit-scrollbar{display:none}
-.playoff-rounds-scroll .playoff-round{scroll-snap-align:start;scroll-snap-stop:always;background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:10px;min-height:310px;box-shadow:0 3px 10px rgba(15,23,42,.08)}
+.playoff-rounds-scroll .playoff-round{scroll-snap-align:start;scroll-snap-stop:always;background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:10px;min-height:310px;box-shadow:0 3px 10px rgba(15,23,42,.08);position:relative;z-index:2}
+.bracket-lines{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:1}
+.playoff-bye-team{border:1px dashed #93c5fd!important;background:#eff6ff!important;color:#1e40af!important}
+.playoff-bye-team small{font-size:9px;font-weight:900;color:#2563eb}
 .playoff-round-page-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8eef6}
 .playoff-round-page-head strong{font-size:15px;color:#1F3864}
 .playoff-round-page-head span{font-size:10px;font-weight:800;color:#64748b;background:#eef4fb;border-radius:999px;padding:4px 8px}
@@ -255,6 +258,20 @@ th{padding:7px 9px;font-size:10px}td{padding:7px 9px;font-size:12px}.pill{border
 .tier-champions-summary h3{font-size:15px;color:#854d0e;margin-bottom:8px;text-align:center}
 .tier-champion-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:10px;padding:9px 10px;margin-top:6px;font-size:12px}
 .tier-champion-row strong{color:#1F3864}.tier-champion-row span{font-weight:900;color:#166534;text-align:right}
+.fixed-bracket-scroll{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;background:#eef4fb;border-top:1px solid #dbe3ef;scrollbar-color:#94a3b8 #e2e8f0}
+.fixed-bracket-board{position:relative;width:2200px;height:1100px;background:linear-gradient(#fff,#f8fbff);font-size:11px}
+.fixed-bracket-label{position:absolute;font-size:15px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#1F3864;border-bottom:3px solid #2563eb;padding-bottom:4px;z-index:3}
+.fixed-bracket-label.losers{color:#9a3412;border-color:#f97316}
+.fixed-game{position:absolute;width:190px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;padding:6px;box-shadow:0 3px 9px rgba(15,23,42,.10);z-index:3}
+.fixed-game.ready{border-color:#60a5fa}.fixed-game.complete{border-color:#22c55e;background:#f0fdf4}.fixed-game.optional{border-style:dashed}
+.fixed-game-title{display:flex;justify-content:space-between;gap:5px;font-size:9px;font-weight:900;text-transform:uppercase;color:#64748b;margin-bottom:5px;padding:0 2px}
+.fixed-team-slot{display:flex;width:100%;min-height:35px;align-items:center;justify-content:space-between;gap:6px;border:0;border-radius:7px;padding:7px 8px;margin-top:4px;background:#f1f5f9;color:#172033;font:inherit;font-weight:800;text-align:left}
+button.fixed-team-slot{cursor:pointer}.fixed-team-slot:disabled{cursor:default;opacity:1}.fixed-team-slot.pending{color:#94a3b8;font-style:italic}.fixed-team-slot.win{background:#dcfce7;color:#166534}.fixed-team-slot.lose{background:#ffedd5;color:#9a3412}
+.fixed-team-slot .seed-tag{font-size:9px;color:#64748b;font-weight:900}.fixed-team-slot.win .seed-tag,.fixed-team-slot.lose .seed-tag{color:inherit}
+.fixed-bracket-lines{position:absolute;left:0;top:0;width:2200px;height:1100px;pointer-events:none;z-index:1;overflow:visible}
+.fixed-bracket-scroll-hint{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#dbeafe}
+.fixed-bracket-scroll-hint button{border:0;border-radius:8px;background:#1F3864;color:#fff;width:38px;height:32px;font-size:18px;font-weight:900;cursor:pointer}.fixed-bracket-scroll-hint span{font-size:10px;font-weight:900;color:#1e3a8a;text-transform:uppercase}
+.fixed-champion{position:absolute;left:1980px;top:470px;width:190px;padding:12px;border-radius:12px;background:#fef3c7;border:2px solid #eab308;color:#854d0e;font-size:14px;font-weight:900;text-align:center;z-index:3}
 @media(max-width:420px){.playoff-title-row{grid-template-columns:1fr}.nav{overflow-x:auto}.nvbtn{min-width:70px}}
 /* LOGO SPLASH SCREEN */
 
@@ -1230,8 +1247,111 @@ function resetForNewSeason(settings) {
   var qr = document.getElementById('qs-row'); if (qr) qr.style.display = 'none';
   renderEverythingSafe();
 }
-// ── Playoff Brackets ───────────────────────────────────────────────────────
-function teamObj(name, seed, losses){ return { name:name, seed:seed, losses:losses || 0 }; }
+// ── Fixed 10-Team Double-Elimination Bracket ───────────────────────────────
+var FIXED_10_GAMES = [
+  {id:1,  side:'W', x:20,   y:95,  a:{type:'seed',seed:9},  b:{type:'seed',seed:8}},
+  {id:2,  side:'W', x:20,   y:420, a:{type:'seed',seed:7},  b:{type:'seed',seed:10}},
+  {id:3,  side:'W', x:260,  y:40,  a:{type:'seed',seed:1},  b:{type:'winner',game:1}},
+  {id:4,  side:'W', x:260,  y:190, a:{type:'seed',seed:4},  b:{type:'seed',seed:5}},
+  {id:5,  side:'W', x:260,  y:340, a:{type:'seed',seed:3},  b:{type:'seed',seed:6}},
+  {id:6,  side:'W', x:260,  y:490, a:{type:'seed',seed:2},  b:{type:'winner',game:2}},
+  {id:7,  side:'L', x:520,  y:680, a:{type:'loser',game:6}, b:{type:'loser',game:1}},
+  {id:8,  side:'L', x:520,  y:920, a:{type:'loser',game:3}, b:{type:'loser',game:2}},
+  {id:9,  side:'W', x:520,  y:115, a:{type:'winner',game:3}, b:{type:'winner',game:4}},
+  {id:10, side:'W', x:520,  y:415, a:{type:'winner',game:5}, b:{type:'winner',game:6}},
+  {id:11, side:'L', x:780,  y:650, a:{type:'loser',game:5}, b:{type:'winner',game:7}},
+  {id:12, side:'L', x:780,  y:880, a:{type:'loser',game:4}, b:{type:'winner',game:8}},
+  {id:13, side:'L', x:1040, y:630, a:{type:'loser',game:9}, b:{type:'winner',game:11}},
+  {id:14, side:'L', x:1040, y:860, a:{type:'loser',game:10},b:{type:'winner',game:12}},
+  {id:15, side:'W', x:800,  y:265, a:{type:'winner',game:9}, b:{type:'winner',game:10}},
+  {id:16, side:'L', x:1300, y:745, a:{type:'winner',game:13},b:{type:'winner',game:14}},
+  {id:17, side:'L', x:1530, y:745, a:{type:'winner',game:16},b:{type:'loser',game:15}},
+  {id:18, side:'F', x:1760, y:350, a:{type:'winner',game:15},b:{type:'winner',game:17}},
+  {id:19, side:'F', x:1980, y:350, optional:true, a:{type:'winner',game:18},b:{type:'loser',game:18}}
+];
+function getFixedGameDef(id){ return FIXED_10_GAMES.find(function(g){ return g.id === Number(id); }); }
+function createDivision(title, teams){
+  var games = {};
+  FIXED_10_GAMES.forEach(function(g){ games[g.id] = {winner:''}; });
+  return {format:'fixed-10-v1', title:title, teams:teams.slice(0,10), games:games, champion:'', runnerUp:''};
+}
+function fixedTeamNames(div){
+  return (div && div.teams || []).map(function(t){ return typeof t === 'string' ? t : t.name; }).filter(Boolean).slice(0,10);
+}
+function normalizeFixedDivision(div, title, fallbackTeams){
+  if (div && div.format === 'fixed-10-v1') return div;
+  var names = fixedTeamNames(div);
+  return createDivision(title, names.length === 10 ? names : fallbackTeams);
+}
+function resolveFixedSource(div, source){
+  if (!div || !source) return '';
+  if (source.type === 'seed') return div.teams[source.seed - 1] || '';
+  var game = div.games && div.games[source.game];
+  if (!game || !game.winner) return '';
+  if (source.type === 'winner') return game.winner;
+  var def = getFixedGameDef(source.game);
+  var teams = getFixedParticipants(div, def);
+  return teams[0] === game.winner ? teams[1] : teams[0];
+}
+function getFixedParticipants(div, def){ return [resolveFixedSource(div, def.a), resolveFixedSource(div, def.b)]; }
+function fixedSourceName(div, source){
+  var team = resolveFixedSource(div, source);
+  if (team) return team;
+  if (source.type === 'seed') return 'Seed ' + source.seed;
+  return (source.type === 'winner' ? 'Winner' : 'Loser') + ' G' + source.game;
+}
+function isFixedGameNeeded(div, def){
+  if (!def.optional) return true;
+  var g18 = div.games && div.games[18];
+  var winnerBracketChampion = resolveFixedSource(div, getFixedGameDef(18).a);
+  return !!(g18 && g18.winner && winnerBracketChampion && g18.winner !== winnerBracketChampion);
+}
+function clearFixedDescendants(div, gameId){
+  var affected = [Number(gameId)], changed = true;
+  while (changed) {
+    changed = false;
+    FIXED_10_GAMES.forEach(function(def){
+      if (affected.indexOf(def.id) >= 0) return;
+      var depends = [def.a,def.b].some(function(s){ return s.game && affected.indexOf(s.game) >= 0; });
+      if (depends) { affected.push(def.id); changed = true; }
+    });
+  }
+  affected.forEach(function(id){ if (div.games[id]) div.games[id].winner = ''; });
+}
+function updateFixedChampion(div){
+  div.champion = ''; div.runnerUp = '';
+  var g18 = div.games[18];
+  if (!g18 || !g18.winner) return;
+  var p18 = getFixedParticipants(div, getFixedGameDef(18));
+  var winnerBracketChampion = p18[0];
+  if (g18.winner === winnerBracketChampion) {
+    div.champion = g18.winner;
+    div.runnerUp = p18[1];
+    if (div.games[19]) div.games[19].winner = '';
+    return;
+  }
+  var g19 = div.games[19];
+  if (g19 && g19.winner) {
+    var p19 = getFixedParticipants(div, getFixedGameDef(19));
+    div.champion = g19.winner;
+    div.runnerUp = p19[0] === g19.winner ? p19[1] : p19[0];
+  }
+}
+function setFixedGameWinner(divKey, gameId, winner){
+  if (!ADMIN_MODE) return;
+  var div = playoffState[divKey], def = getFixedGameDef(gameId);
+  if (!div || !def || !isFixedGameNeeded(div, def)) return;
+  var teams = getFixedParticipants(div, def);
+  if (teams.indexOf(winner) < 0 || !teams[0] || !teams[1]) return;
+  clearFixedDescendants(div, gameId);
+  div.games[gameId].winner = winner;
+  updateFixedChampion(div);
+  playoffState.final = {teamA:'',teamB:'',winner:''};
+  renderPlayoffs();
+  fillPlayoffAdminForm();
+  save();
+}
+window.setFixedGameWinner = setFixedGameWinner;
 function getPlayoffTitlesFromAdmin(){
   var top = document.getElementById('admin-top-bracket-title');
   var bot = document.getElementById('admin-bottom-bracket-title');
@@ -1243,140 +1363,67 @@ function fillPlayoffAdminForm(){
   var bot = document.getElementById('admin-bottom-bracket-title');
   if (top) top.value = playoffState.topTitle || 'Tier 1 Championship';
   if (bot) bot.value = playoffState.bottomTitle || 'Tier 2 Championship';
-  var a = document.getElementById('final-team-a');
-  var b = document.getElementById('final-team-b');
+  var a = document.getElementById('final-team-a'), b = document.getElementById('final-team-b');
   if (a) a.value = (playoffState.final && playoffState.final.teamA) || '';
   if (b) b.value = (playoffState.final && playoffState.final.teamB) || '';
   var note = document.getElementById('tier-champions-admin-note');
-  var tier1Champion = playoffState.top && playoffState.top.champion;
-  var tier2Champion = playoffState.bottom && playoffState.bottom.champion;
-  if (note) note.textContent = (tier1Champion && tier2Champion)
-    ? 'Tier 1: ' + tier1Champion + ' · Tier 2: ' + tier2Champion + '. Enter the two new teams after the four players switch partners.'
-    : 'Complete both tier brackets first. The four champion players then switch partners for one final game.';
+  var c1 = playoffState.top && playoffState.top.champion, c2 = playoffState.bottom && playoffState.bottom.champion;
+  if (note) note.textContent = (c1 && c2) ? 'Tier 1: ' + c1 + ' · Tier 2: ' + c2 : 'Complete both tier brackets first.';
   updateFinalWinnerSelect();
 }
-function pairPlayoffTeams(list){
-  var arr = list.slice().sort(function(a,b){ return a.seed - b.seed; });
-  var matches=[], byes=[];
-  while(arr.length > 1){
-    var a = arr.shift(), b = arr.pop();
-    matches.push({ a:a, b:b, winner:'', loser:'', complete:false });
-  }
-  if (arr.length) byes.push(arr[0]);
-  return {matches:matches, byes:byes};
+function renderFixedTeamSlot(divKey, div, def, source, team, winner){
+  var complete = !!winner, isWinner = complete && winner === team;
+  var teams = getFixedParticipants(div, def), ready = teams[0] && teams[1] && isFixedGameNeeded(div, def);
+  var cls = 'fixed-team-slot' + (!team ? ' pending' : '') + (isWinner ? ' win' : (complete && team ? ' lose' : ''));
+  var label = team || fixedSourceName(div, source);
+  if (ADMIN_MODE && ready) return '<button type="button" class="' + cls + '" data-source-game="' + (source.game || '') + '" data-source-type="' + source.type + '" onclick="setFixedGameWinner(\'' + divKey + '\',' + def.id + ',decodeURIComponent(\'' + encodeURIComponent(team) + '\'))">' + label + '</button>';
+  return '<div class="' + cls + '" data-source-game="' + (source.game || '') + '" data-source-type="' + source.type + '">' + label + '</div>';
 }
-function makePlayoffRound(div, roundNum, activeTeams){
-  var wb = activeTeams.filter(function(t){ return (t.losses || 0) === 0; });
-  var lb = activeTeams.filter(function(t){ return (t.losses || 0) === 1; });
-  if (activeTeams.length === 2 && wb.length === 1 && lb.length === 1) {
-    return { round: roundNum, stage:'Grand Final', wb:[{ a:wb[0], b:lb[0], winner:'', loser:'', complete:false }], lb:[], byes:[] };
-  }
-  var pw = pairPlayoffTeams(wb), pl = pairPlayoffTeams(lb);
-  var stage = (activeTeams.length === 2 && lb.length === 2) ? 'Final Reset' : '';
-  return { round: roundNum, stage:stage, wb: pw.matches, lb: pl.matches, byes: pw.byes.concat(pl.byes) };
+function renderFixedGame(divKey, div, def){
+  var teams = getFixedParticipants(div, def), game = div.games[def.id] || {winner:''};
+  var needed = isFixedGameNeeded(div, def), ready = needed && teams[0] && teams[1];
+  var cls = 'fixed-game' + (ready ? ' ready' : '') + (game.winner ? ' complete' : '') + (def.optional ? ' optional' : '');
+  var side = def.side === 'W' ? 'Winner' : def.side === 'L' ? 'Loser' : 'Final';
+  return '<div class="' + cls + '" data-game-id="' + def.id + '" style="left:' + def.x + 'px;top:' + def.y + 'px">'
+    + '<div class="fixed-game-title"><span>Game ' + def.id + (def.optional ? ' · If needed' : '') + '</span><span>' + side + '</span></div>'
+    + renderFixedTeamSlot(divKey, div, def, def.a, teams[0], game.winner)
+    + renderFixedTeamSlot(divKey, div, def, def.b, teams[1], game.winner)
+    + '</div>';
 }
-function createDivision(title, teams){
-  var seeded = teams.map(function(name, i){ return teamObj(name, i+1, 0); });
-  return { title:title, teams:seeded, rounds:[makePlayoffRound(null, 1, seeded)], champion:'' };
-}
-function allRoundMatches(round){ return (round.wb || []).concat(round.lb || []); }
-function isRoundComplete(round){
-  var m = allRoundMatches(round);
-  return m.length === 0 || m.every(function(x){ return !!x.winner; });
-}
-function advanceDivision(div){
-  if (!div || div.champion) return;
-  var last = div.rounds[div.rounds.length - 1];
-  if (!isRoundComplete(last)) return;
-  var active = [];
-  (last.byes || []).forEach(function(t){ active.push(teamObj(t.name, t.seed, t.losses || 0)); });
-  allRoundMatches(last).forEach(function(m){
-    var aWin = m.winner === m.a.name;
-    var win = aWin ? m.a : m.b;
-    var lose = aWin ? m.b : m.a;
-    active.push(teamObj(win.name, win.seed, win.losses || 0));
-    var newLosses = (lose.losses || 0) + 1;
-    if (newLosses < 2) active.push(teamObj(lose.name, lose.seed, newLosses));
+function drawFixedBracketLines(divKey){
+  var board = document.getElementById('fixed-bracket-board-' + divKey); if (!board) return;
+  var svg = board.querySelector('.fixed-bracket-lines'); if (!svg) return;
+  svg.innerHTML = '';
+  var boardRect = board.getBoundingClientRect();
+  board.querySelectorAll('.fixed-team-slot[data-source-game]').forEach(function(target){
+    var gameId = target.getAttribute('data-source-game'); if (!gameId) return;
+    var source = board.querySelector('.fixed-game[data-game-id="' + gameId + '"]'); if (!source) return;
+    var a = source.getBoundingClientRect(), b = target.getBoundingClientRect();
+    var x1 = a.right - boardRect.left, y1 = a.top + a.height/2 - boardRect.top;
+    var x2 = b.left - boardRect.left, y2 = b.top + b.height/2 - boardRect.top;
+    var mid = x1 + Math.max(18,(x2-x1)/2), type = target.getAttribute('data-source-type');
+    var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d','M '+x1+' '+y1+' H '+mid+' V '+y2+' H '+x2);
+    path.setAttribute('fill','none'); path.setAttribute('stroke',type === 'loser' ? '#f97316' : '#2563eb');
+    path.setAttribute('stroke-width','3'); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
+    svg.appendChild(path);
   });
-  if (active.length === 1) { div.champion = active[0].name; return; }
-  div.rounds.push(makePlayoffRound(div, div.rounds.length + 1, active));
 }
-function setPlayoffWinner(divKey, roundIdx, side, matchIdx, winner){
-  if (!ADMIN_MODE) return;
-  var div = playoffState[divKey];
-  if (!div || !div.rounds[roundIdx]) return;
-  var match = div.rounds[roundIdx][side][matchIdx];
-  if (!match) return;
-  match.winner = winner;
-  match.loser = (winner === match.a.name) ? match.b.name : match.a.name;
-  match.complete = true;
-  // Remove any future rounds if a previous result was changed.
-  div.rounds = div.rounds.slice(0, roundIdx + 1);
-  div.champion = '';
-  playoffState.final = {teamA:'',teamB:'',winner:''};
-  advanceDivision(div);
-  renderPlayoffs();
-  var targetRound = isRoundComplete(div.rounds[roundIdx]) ? Math.min(roundIdx + 1, div.rounds.length - 1) : roundIdx;
-  requestAnimationFrame(function(){ scrollPlayoffToRound(divKey, targetRound); });
-  fillPlayoffAdminForm();
-  save();
+function drawAllFixedBracketLines(){ drawFixedBracketLines('top'); drawFixedBracketLines('bottom'); }
+window.addEventListener('resize',function(){ requestAnimationFrame(drawAllFixedBracketLines); });
+function scrollFixedBracket(divKey,direction){
+  var scroller = document.getElementById('fixed-bracket-scroll-' + divKey); if (!scroller) return;
+  scroller.scrollBy({left:direction * Math.max(280,scroller.clientWidth * .82),behavior:'smooth'});
 }
-window.setPlayoffWinner = setPlayoffWinner;
-function renderPlayoffMatch(divKey, roundIdx, side, m, idx){
-  var done = !!m.winner;
-  function row(t){
-    var win = done && m.winner === t.name;
-    return '<div class="playoff-team ' + (win ? 'win' : '') + '"><span><span class="seed">#' + t.seed + '</span>' + t.name + (t.losses ? ' <small>(' + t.losses + 'L)</small>' : '') + '</span>'
-      + (ADMIN_MODE ? '<button class="playoff-win-btn" onclick="setPlayoffWinner(\'' + divKey + '\',' + roundIdx + ',\'' + side + '\',' + idx + ',\'' + t.name.replace(/'/g,"&#39;") + '\')">Winner</button>' : '')
-      + '</div>';
-  }
-  var result = '';
-  if (done) {
-    var losingTeam = m.winner === m.a.name ? m.b : m.a;
-    var nextLosses = (losingTeam.losses || 0) + 1;
-    result = '<div class="playoff-advance">✓ ' + m.winner + ' advances to the next round'
-      + (nextLosses >= 2 ? '<span class="playoff-eliminated">✕ ' + m.loser + ' is eliminated (second loss)</span>' : '<span class="playoff-drop">↓ ' + m.loser + ' moves to the elimination side</span>')
-      + '</div>';
-  }
-  return '<div class="playoff-match ' + (done ? 'done' : '') + '">' + row(m.a) + row(m.b) + result + '</div>';
-}
-function scrollPlayoffToRound(divKey, roundIndex){
-  var scroller = document.getElementById('playoff-rounds-' + divKey);
-  if (!scroller) return;
-  var pages = scroller.querySelectorAll('.playoff-round');
-  var page = pages[Math.max(0, Math.min(roundIndex, pages.length - 1))];
-  if (page) page.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'start' });
-}
-function scrollPlayoffRounds(divKey, direction){
-  var scroller = document.getElementById('playoff-rounds-' + divKey);
-  if (!scroller) return;
-  var width = scroller.clientWidth || 280;
-  var current = Math.round(scroller.scrollLeft / width);
-  scrollPlayoffToRound(divKey, current + direction);
-}
-window.scrollPlayoffRounds = scrollPlayoffRounds;
+window.scrollFixedBracket = scrollFixedBracket;
 function renderDivision(divKey, div){
-  if (!div) return '<div class="playoff-bracket"><div class="playoff-round"><div class="playoff-note">Bracket not generated.</div></div></div>';
-  var html = '<div class="playoff-bracket"><div class="playoff-bracket-hdr"><span>' + (div.title || 'Bracket') + '</span><small>' + (div.champion ? 'Champion: ' + div.champion : 'Double Elimination') + '</small></div>';
-  html += '<div class="bracket-instructions">Swipe sideways through the round pages. A first loss drops a team into the Loser\'s Bracket. Lose there and the team is eliminated. The Loser\'s Bracket winner advances to the championship.</div>';
-  html += '<div class="bracket-swipe-nav"><button type="button" onclick="scrollPlayoffRounds(\'' + divKey + '\',-1)" aria-label="Previous round">‹</button><span>Swipe through rounds</span><button type="button" onclick="scrollPlayoffRounds(\'' + divKey + '\',1)" aria-label="Next round">›</button></div>';
-  html += '<div class="playoff-rounds-scroll" id="playoff-rounds-' + divKey + '">';
-  var roundList = div.rounds || [];
-  var lastRound = roundList[roundList.length - 1];
-  var pendingNext = !div.champion && lastRound && !isRoundComplete(lastRound);
-  var totalRoundPages = roundList.length + (pendingNext ? 1 : 0);
-  roundList.forEach(function(r, ri){
-    html += '<section class="playoff-round"><div class="playoff-round-page-head"><strong>' + (r.stage || ('Round ' + r.round)) + '</strong><span>Page ' + (ri + 1) + ' of ' + totalRoundPages + '</span></div>';
-    if ((r.wb || []).length) html += '<div class="playoff-side-label">' + (r.stage ? r.stage + ' · Championship Match' : 'Winner\'s Bracket · Undefeated') + '</div>' + r.wb.map(function(m, mi){ return renderPlayoffMatch(divKey, ri, 'wb', m, mi); }).join('');
-    if ((r.lb || []).length) html += '<div class="playoff-side-label elimination">' + (r.stage ? r.stage + ' · Championship Match' : 'Loser\'s Bracket · Lose = Eliminated') + '</div>' + r.lb.map(function(m, mi){ return renderPlayoffMatch(divKey, ri, 'lb', m, mi); }).join('');
-    if ((r.byes || []).length) html += '<div class="playoff-note"><strong>Byes:</strong> ' + r.byes.map(function(t){ return '<span class="playoff-bye">#' + t.seed + ' ' + t.name + '</span>'; }).join('') + '</div>';
-    html += '</section>';
-  });
-  if (pendingNext) html += '<section class="playoff-round playoff-round-next"><div class="next-arrow">→</div><strong>Next Round</strong><div>Choose every winner on Round ' + lastRound.round + ' to create the next page.</div></section>';
-  html += '</div>';
-  if (div.champion) html += '<div class="final-winner">🏆 ' + div.champion + '</div>';
-  html += '</div>';
-  return html;
+  if (!div) return '';
+  var gamesHtml = FIXED_10_GAMES.map(function(def){ return renderFixedGame(divKey,div,def); }).join('');
+  return '<div class="playoff-bracket"><div class="playoff-bracket-hdr"><span>' + div.title + '</span><small>10-Team Double Elimination</small></div>'
+    + '<div class="fixed-bracket-scroll-hint"><button type="button" onclick="scrollFixedBracket(\'' + divKey + '\',-1)">‹</button><span>Swipe across the bracket</span><button type="button" onclick="scrollFixedBracket(\'' + divKey + '\',1)">›</button></div>'
+    + '<div class="fixed-bracket-scroll" id="fixed-bracket-scroll-' + divKey + '"><div class="fixed-bracket-board" id="fixed-bracket-board-' + divKey + '">'
+    + '<svg class="fixed-bracket-lines" viewBox="0 0 2200 1100"></svg><div class="fixed-bracket-label" style="left:20px;top:8px">Winner\'s Bracket</div><div class="fixed-bracket-label losers" style="left:20px;top:610px">Loser\'s Bracket</div>'
+    + gamesHtml + (div.champion ? '<div class="fixed-champion">🏆 ' + div.champion + '</div>' : '') + '</div></div></div>';
 }
 function updateFinalWinnerSelect(){
   var sel = document.getElementById('final-winner-sel'); if (!sel) return;
@@ -1395,8 +1442,8 @@ function renderPlayoffs(){
   }
   if (!playoffState.topTitle || playoffState.topTitle === 'Championship Bracket') playoffState.topTitle = 'Tier 1 Championship';
   if (!playoffState.bottomTitle || playoffState.bottomTitle === 'Bottom Bracket') playoffState.bottomTitle = 'Tier 2 Championship';
-  if (playoffState.top && (!playoffState.top.title || playoffState.top.title === 'Championship Bracket')) playoffState.top.title = 'Tier 1 Championship';
-  if (playoffState.bottom && (!playoffState.bottom.title || playoffState.bottom.title === 'Bottom Bracket')) playoffState.bottom.title = 'Tier 2 Championship';
+  playoffState.top = normalizeFixedDivision(playoffState.top, playoffState.topTitle, TEAMS.slice(0,10));
+  playoffState.bottom = normalizeFixedDivision(playoffState.bottom, playoffState.bottomTitle, TEAMS.slice(10,20));
   var html = '<div class="playoff-grid">' + renderDivision('top', playoffState.top) + renderDivision('bottom', playoffState.bottom);
   html += '<div class="tier-champions-summary"><h3>🏆 Tier Champions</h3>'
     + '<div class="tier-champion-row"><strong>Tier 1 Champion</strong><span>' + ((playoffState.top && playoffState.top.champion) || 'To be determined') + '</span></div>'
@@ -1419,6 +1466,7 @@ function renderPlayoffs(){
   }
   html += '</div></div>';
   body.innerHTML = html;
+  requestAnimationFrame(drawAllFixedBracketLines);
   var sub = document.getElementById('playoff-sub');
   if (sub) sub.textContent = playoffState.locked ? 'Regular season locked' : 'Double elimination';
 }
