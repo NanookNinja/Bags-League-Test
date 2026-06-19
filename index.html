@@ -265,9 +265,10 @@ th{padding:7px 9px;font-size:10px}td{padding:7px 9px;font-size:12px}.pill{border
 .fixed-game{position:absolute;width:190px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;padding:6px;box-shadow:0 3px 9px rgba(15,23,42,.10);z-index:3}
 .fixed-game.ready{border-color:#60a5fa}.fixed-game.complete{border-color:#22c55e;background:#f0fdf4}.fixed-game.optional{border-style:dashed}
 .fixed-game-title{display:flex;justify-content:space-between;gap:5px;font-size:9px;font-weight:900;text-transform:uppercase;color:#64748b;margin-bottom:5px;padding:0 2px}
-.fixed-team-slot{display:flex;width:100%;min-height:35px;align-items:center;justify-content:space-between;gap:6px;border:0;border-radius:7px;padding:7px 8px;margin-top:4px;background:#f1f5f9;color:#172033;font:inherit;font-weight:800;text-align:left}
+.fixed-team-slot{display:flex;width:100%;min-height:39px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;border:0;border-radius:7px;padding:6px 8px;margin-top:4px;background:#f1f5f9;color:#172033;font:inherit;font-weight:800;text-align:left}
 button.fixed-team-slot{cursor:pointer}.fixed-team-slot:disabled{cursor:default;opacity:1}.fixed-team-slot.pending{color:#94a3b8;font-style:italic}.fixed-team-slot.win{background:#dcfce7;color:#166534}.fixed-team-slot.lose{background:#ffedd5;color:#9a3412}
 .fixed-team-slot .seed-tag{font-size:9px;color:#64748b;font-weight:900}.fixed-team-slot.win .seed-tag,.fixed-team-slot.lose .seed-tag{color:inherit}
+.fixed-source-label{font-size:8px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#64748b;font-style:normal;line-height:1.1}.fixed-team-slot.win .fixed-source-label,.fixed-team-slot.lose .fixed-source-label{color:inherit;opacity:.8}
 .fixed-bracket-lines{position:absolute;left:0;top:0;width:2200px;height:1100px;pointer-events:none;z-index:1;overflow:visible}
 .fixed-bracket-scroll-hint{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#dbeafe}
 .fixed-bracket-scroll-hint button{border:0;border-radius:8px;background:#1F3864;color:#fff;width:38px;height:32px;font-size:18px;font-weight:900;cursor:pointer}.fixed-bracket-scroll-hint span{font-size:10px;font-weight:900;color:#1e3a8a;text-transform:uppercase}
@@ -1325,7 +1326,7 @@ function fixedSourceName(div, source){
   var team = resolveFixedSource(div, source);
   if (team) return team;
   if (source.type === 'seed') return 'Seed ' + source.seed;
-  return (source.type === 'winner' ? 'Winner' : 'Loser') + ' G' + source.game;
+  return (source.type === 'winner' ? 'Winner' : 'Loser') + ' of Game ' + source.game;
 }
 function isFixedGameNeeded(div, def){
   if (!def.optional) return true;
@@ -1402,9 +1403,11 @@ function renderFixedTeamSlot(divKey, div, def, source, team, winner){
   var complete = !!winner, isWinner = complete && winner === team;
   var teams = getFixedParticipants(div, def), ready = teams[0] && teams[1] && isFixedGameNeeded(div, def);
   var cls = 'fixed-team-slot' + (!team ? ' pending' : '') + (isWinner ? ' win' : (complete && team ? ' lose' : ''));
-  var label = team || fixedSourceName(div, source);
-  if (ADMIN_MODE && ready && !BRACKET_DESIGN_MODE) return '<button type="button" class="' + cls + '" data-source-game="' + (source.game || '') + '" data-source-type="' + source.type + '" onclick="setFixedGameWinner(\'' + divKey + '\',' + def.id + ',decodeURIComponent(\'' + encodeURIComponent(team) + '\'))">' + label + '</button>';
-  return '<div class="' + cls + '" data-source-game="' + (source.game || '') + '" data-source-type="' + source.type + '">' + label + '</div>';
+  var label = team || (source.type === 'seed' ? fixedSourceName(div,source) : 'TBD');
+  var sourceText = source.type === 'seed' ? '' : (source.type === 'winner' ? 'Winner of Game ' : 'Loser of Game ') + source.game;
+  var content = (sourceText ? '<small class="fixed-source-label">' + sourceText + '</small>' : '') + '<span>' + label + '</span>';
+  if (ADMIN_MODE && ready && !BRACKET_DESIGN_MODE) return '<button type="button" class="' + cls + '" data-source-game="' + (source.game || '') + '" data-source-type="' + source.type + '" onclick="setFixedGameWinner(\'' + divKey + '\',' + def.id + ',decodeURIComponent(\'' + encodeURIComponent(team) + '\'))">' + content + '</button>';
+  return '<div class="' + cls + '" data-source-game="' + (source.game || '') + '" data-source-type="' + source.type + '">' + content + '</div>';
 }
 function renderFixedGame(divKey, div, def){
   var teams = getFixedParticipants(div, def), game = div.games[def.id] || {winner:''};
@@ -1425,14 +1428,16 @@ function drawFixedBracketLines(divKey){
   var boardRect = board.getBoundingClientRect();
   board.querySelectorAll('.fixed-team-slot[data-source-game]').forEach(function(target){
     var gameId = target.getAttribute('data-source-game'); if (!gameId) return;
+    var type = target.getAttribute('data-source-type');
+    if (type !== 'winner') return;
     var source = board.querySelector('.fixed-game[data-game-id="' + gameId + '"]'); if (!source) return;
     var a = source.getBoundingClientRect(), b = target.getBoundingClientRect();
     var x1 = a.right - boardRect.left, y1 = a.top + a.height/2 - boardRect.top;
     var x2 = b.left - boardRect.left, y2 = b.top + b.height/2 - boardRect.top;
-    var mid = x1 + Math.max(18,(x2-x1)/2), type = target.getAttribute('data-source-type');
+    var mid = x1 + Math.max(18,(x2-x1)/2);
     var path = document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d','M '+x1+' '+y1+' H '+mid+' V '+y2+' H '+x2);
-    path.setAttribute('fill','none'); path.setAttribute('stroke',type === 'loser' ? '#f97316' : '#2563eb');
+    path.setAttribute('fill','none'); path.setAttribute('stroke','#2563eb');
     path.setAttribute('stroke-width','3'); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
     svg.appendChild(path);
   });
