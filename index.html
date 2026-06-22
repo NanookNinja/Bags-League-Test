@@ -1461,16 +1461,31 @@ function rebuildWeekControls() {
   var wsel = document.getElementById('week-sel');
   var bwsel = document.getElementById('bagger-week-sel');
   var wfilt = document.getElementById('wk-filter');
+  var scoreCalendar = [];
   if (wsel) wsel.innerHTML = '<option value="">Select week...</option>';
   if (bwsel) bwsel.innerHTML = '<option value="">Select week...</option>';
   if (wfilt) wfilt.innerHTML = '<button class="wfbtn active" data-filter="">All</button>';
   for (var w = 1; w <= WEEKS; w++) {
     var dateLabel = formatLeagueDate(getWeekDate(w),true);
     var hadRainout = (leagueSettings.rainouts || []).some(function(item){ return Number(item.week) === w; });
-    if (wsel) { var o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w + (hadRainout ? ' 🌧' : '') + (dateLabel ? ' — ' + dateLabel : ''); wsel.appendChild(o); }
+    (leagueSettings.rainouts || []).filter(function(item){ return Number(item.week) === w; }).forEach(function(item){
+      scoreCalendar.push({date:item.date,order:0,label:'🌧 ' + formatLeagueDate(item.date,true) + ' — Week ' + w + ' RAINED OUT',disabled:true});
+    });
+    scoreCalendar.push({date:getWeekDate(w),order:1,label:'Week ' + w + (hadRainout ? ' (Rescheduled)' : '') + (dateLabel ? ' — ' + dateLabel : ''),value:w});
     if (bwsel) { var o2 = document.createElement('option'); o2.value = w; o2.textContent = 'Week ' + w + (dateLabel ? ' — ' + dateLabel : ''); bwsel.appendChild(o2); }
     if (wfilt) { var btn = document.createElement('button'); btn.className = 'wfbtn'; btn.textContent = 'Wk ' + w; btn.setAttribute('data-filter', w); wfilt.appendChild(btn); }
   }
+  (leagueSettings.calendarNotes || []).filter(function(item){ return item.status === 'Off'; }).forEach(function(item){
+    scoreCalendar.push({date:item.date,order:0,label:'🎆 ' + formatLeagueDate(item.date,true) + ' — JULY 4TH HOLIDAY',disabled:true});
+  });
+  scoreCalendar.sort(function(a,b){ return (a.date || '9999').localeCompare(b.date || '9999') || a.order-b.order; });
+  if (wsel) scoreCalendar.forEach(function(item){
+    var option = document.createElement('option');
+    option.value = item.disabled ? '' : item.value;
+    option.textContent = item.label;
+    option.disabled = !!item.disabled;
+    wsel.appendChild(option);
+  });
   if (curWeek && curWeek <= WEEKS && wsel) wsel.value = curWeek;
   if (baggerWeek && baggerWeek <= WEEKS && bwsel) bwsel.value = baggerWeek;
 }
