@@ -1003,12 +1003,7 @@ function renderTeamPage(){
   });
   var html = '<div class="team-profile-head"><h2>' + team + '</h2><p>Team ' + tnum(team) + ' · ' + (leagueSettings.seasonName || 'Current Season') + '</p></div>'
     + '<div class="team-stat-grid"><div class="team-stat"><strong>' + totals.wins + '-' + totals.losses + '</strong><span>Game Record</span></div><div class="team-stat"><strong>' + totals.played + '</strong><span>Games Played</span></div><div class="team-stat"><strong>' + pct + '</strong><span>Win Rate</span></div></div>'
-    + '<details class="team-collapse"><summary><span>Opponent History</span><small>Meetings and game record</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content opponent-history">';
-  html += opponentNames.map(function(opponent){
-    var h = detail.opponents[opponent];
-    return '<div class="opponent-card"><strong>' + opponent + '</strong><span>Met ' + h.scheduled + 'x · ' + h.completed + ' completed</span><span class="opponent-record">' + h.wins + '-' + h.losses + '</span></div>';
-  }).join('') || '<div style="text-align:center;color:#999;padding:12px">No opponents scheduled.</div>';
-  html += '</div></details><details class="team-collapse"><summary><span>Full Season Schedule</span><small>' + detail.schedule.length + ' matchups</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content team-schedule">';
+    + '<details class="team-collapse"><summary><span>Full Season Schedule</span><small>' + detail.schedule.length + ' matchups</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content team-schedule">';
   for (var weekNumber = 1; weekNumber <= WEEKS; weekNumber++) {
     var weekGames = detail.schedule.filter(function(game){ return game.week === weekNumber; });
     if (!weekGames.length) continue;
@@ -1021,6 +1016,12 @@ function renderTeamPage(){
     }).join('');
     html += '</div></div>';
   }
+  html += '</div></details>';
+  html += '<details class="team-collapse"><summary><span>Opponent History</span><small>Meetings and game record</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content opponent-history">';
+  html += opponentNames.map(function(opponent){
+    var h = detail.opponents[opponent];
+    return '<div class="opponent-card"><strong>' + opponent + '</strong><span>Met ' + h.scheduled + 'x · ' + h.completed + ' completed</span><span class="opponent-record">' + h.wins + '-' + h.losses + '</span></div>';
+  }).join('') || '<div style="text-align:center;color:#999;padding:12px">No opponents scheduled.</div>';
   html += '</div></details>';
   content.innerHTML = html;
 }
