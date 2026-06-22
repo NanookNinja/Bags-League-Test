@@ -149,6 +149,7 @@ input[type=text]:focus{border-color:#7B2D8B;background:#fff}
 .team-schedule{display:grid;gap:7px}.team-schedule-game{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:9px 10px;display:grid;grid-template-columns:65px 1fr auto;align-items:center;gap:8px}.team-schedule-when{font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase}.team-schedule-opponent{font-size:12px;font-weight:800;color:#172033}.team-schedule-opponent small{display:block;color:#94a3b8;font-size:9px;margin-top:2px}.team-result{border-radius:999px;padding:4px 7px;font-size:10px;font-weight:900;background:#e2e8f0;color:#475569;white-space:nowrap}.team-result.win{background:#dcfce7;color:#166534}.team-result.loss{background:#fee2e2;color:#991b1b}.team-result.progress{background:#fef3c7;color:#854d0e}
 .team-week-block{display:grid;grid-template-columns:62px 1fr;border:2px solid #bfdbfe;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 3px 9px rgba(15,23,42,.07)}.team-week-block:nth-child(even){border-color:#c4b5fd}.team-week-label{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#1F3864,#2E75B6);color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.team-week-label strong{font-size:24px;line-height:1;margin-top:3px}.team-week-block:nth-child(even) .team-week-label{background:linear-gradient(180deg,#5b21b6,#7c3aed)}.team-week-rounds{display:grid}.team-week-round{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:8px;padding:9px;border-bottom:1px solid #e2e8f0;min-height:57px}.team-week-round:last-child{border-bottom:0}.team-round-label{font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase}.team-round-opponent{font-size:12px;font-weight:900;color:#172033}.team-round-opponent small{display:block;font-size:9px;color:#94a3b8;font-weight:700;margin-top:2px}
 .team-page-link{border:0;background:none;padding:0;color:#1F3864;font:inherit;font-weight:700;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#bfdbfe;text-underline-offset:2px}
+.team-collapse{background:#fff;border:1px solid #dbe3ef;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 10px rgba(15,23,42,.07)}.team-collapse summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#183153,#2563eb);color:#fff;cursor:pointer;list-style:none;font-size:13px;font-weight:900}.team-collapse summary::-webkit-details-marker{display:none}.team-collapse summary small{font-size:10px;font-weight:700;opacity:.75;margin-left:auto}.team-collapse-arrow{font-size:17px;transition:transform .18s}.team-collapse[open] .team-collapse-arrow{transform:rotate(180deg)}.team-collapse-content{padding:10px}
 
 /* Cloud sync status */
 .cloud-status{background:#fff;border:1.5px solid #B5D4F4;color:#1F3864;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;text-align:center;margin-bottom:10px}
@@ -1002,12 +1003,12 @@ function renderTeamPage(){
   });
   var html = '<div class="team-profile-head"><h2>' + team + '</h2><p>Team ' + tnum(team) + ' · ' + (leagueSettings.seasonName || 'Current Season') + '</p></div>'
     + '<div class="team-stat-grid"><div class="team-stat"><strong>' + totals.wins + '-' + totals.losses + '</strong><span>Game Record</span></div><div class="team-stat"><strong>' + totals.played + '</strong><span>Games Played</span></div><div class="team-stat"><strong>' + pct + '</strong><span>Win Rate</span></div></div>'
-    + '<div class="card"><div class="card-hdr navy"><span>Opponent History</span><span class="csub">Meetings and game record</span></div><div style="padding:10px" class="opponent-history">';
+    + '<details class="team-collapse"><summary><span>Opponent History</span><small>Meetings and game record</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content opponent-history">';
   html += opponentNames.map(function(opponent){
     var h = detail.opponents[opponent];
     return '<div class="opponent-card"><strong>' + opponent + '</strong><span>Met ' + h.scheduled + 'x · ' + h.completed + ' completed</span><span class="opponent-record">' + h.wins + '-' + h.losses + '</span></div>';
   }).join('') || '<div style="text-align:center;color:#999;padding:12px">No opponents scheduled.</div>';
-  html += '</div></div><div class="card"><div class="card-hdr navy"><span>Full Season Schedule</span><span class="csub">' + detail.schedule.length + ' matchups</span></div><div style="padding:10px" class="team-schedule">';
+  html += '</div></details><details class="team-collapse"><summary><span>Full Season Schedule</span><small>' + detail.schedule.length + ' matchups</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content team-schedule">';
   for (var weekNumber = 1; weekNumber <= WEEKS; weekNumber++) {
     var weekGames = detail.schedule.filter(function(game){ return game.week === weekNumber; });
     if (!weekGames.length) continue;
@@ -1020,7 +1021,7 @@ function renderTeamPage(){
     }).join('');
     html += '</div></div>';
   }
-  html += '</div></div>';
+  html += '</div></details>';
   content.innerHTML = html;
 }
 function openTeamPage(team){
@@ -1267,7 +1268,7 @@ function applyLeagueSettings(settings) {
   var regularWeeks = parseInt(settings.weeks || leagueSettings.weeks || 10);
   var playoffsStart = settings.playoffsStart || leagueSettings.playoffsStart || '';
   // Migrate the original 11-week setting to 10 regular weeks plus playoffs in Week 11.
-  if (regularWeeks === 11 && !playoffsStart) { regularWeeks = 10; playoffsStart = '11'; }
+  if (regularWeeks === 11 && (!playoffsStart || String(playoffsStart) === '11')) { regularWeeks = 10; playoffsStart = '11'; }
   if (!playoffsStart) playoffsStart = String(regularWeeks + 1);
   leagueSettings = {
     leagueName: settings.leagueName || settings.title || leagueSettings.leagueName || 'Bags League',
@@ -1833,6 +1834,7 @@ let db = null;
 let cloudReady = false;
 let applyingRemote = false;
 let saveTimer = null;
+let pendingWeekMigration = false;
 const localSave = window.save;
 
 function renderEverything() {
@@ -1899,6 +1901,7 @@ async function startCloudSync() {
     onAuthStateChanged(auth, async function(user) {
       if (user && user.uid === ADMIN_UID) {
         window.setAdminMode(ADMIN_REQUESTED, user.email || '');
+        if (pendingWeekMigration) setTimeout(function(){ if (ADMIN_MODE && typeof window.save === 'function') window.save(); }, 500);
         return;
       }
       window.setAdminMode(false, '');
@@ -1943,6 +1946,10 @@ async function startCloudSync() {
         return;
       }
       const data = snapshot.data() || {};
+      const remoteSettings = data.settings || {};
+      const needsTenWeekMigration = parseInt(remoteSettings.weeks) === 11
+        && (!remoteSettings.playoffsStart || String(remoteSettings.playoffsStart) === '11');
+      pendingWeekMigration = needsTenWeekMigration;
       applyingRemote = true;
       archives = data.archives || {};
       playoffState = data.playoffs || playoffState || { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''} };
@@ -1959,6 +1966,10 @@ async function startCloudSync() {
       renderEverything();
       applyingRemote = false;
       cloudStatus('Cloud sync live', 'ok');
+      if (needsTenWeekMigration && ADMIN_MODE) {
+        pendingWeekMigration = false;
+        setTimeout(function(){ window.save(); }, 50);
+      }
     }, function(error) {
       console.error(error);
       cloudStatus('Cloud sync permission/config error', 'err');
