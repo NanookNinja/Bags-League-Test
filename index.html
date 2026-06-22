@@ -143,6 +143,11 @@ input[type=text]:focus{border-color:#7B2D8B;background:#fff}
 .rank-gold{color:#C9A227;font-weight:700}
 .rank-silver{color:#9E9E9E;font-weight:700}
 .rank-bronze{color:#A0522D;font-weight:700}
+.team-profile-head{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 6px 16px rgba(15,118,110,.22)}.team-profile-head h2{font-size:18px;margin-bottom:3px}.team-profile-head p{font-size:11px;opacity:.85}
+.team-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}.team-stat{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:9px 6px;text-align:center}.team-stat strong{display:block;font-size:18px;color:#1F3864}.team-stat span{font-size:9px;color:#64748b;font-weight:800;text-transform:uppercase}
+.opponent-history{display:grid;gap:7px;margin-bottom:12px}.opponent-card{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:9px 10px;display:grid;grid-template-columns:1fr auto;gap:4px 10px}.opponent-card strong{font-size:12px;color:#172033}.opponent-card span{font-size:10px;color:#64748b}.opponent-record{grid-row:1/3;grid-column:2;font-size:13px!important;font-weight:900;color:#0f766e!important;align-self:center}
+.team-schedule{display:grid;gap:7px}.team-schedule-game{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:9px 10px;display:grid;grid-template-columns:65px 1fr auto;align-items:center;gap:8px}.team-schedule-when{font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase}.team-schedule-opponent{font-size:12px;font-weight:800;color:#172033}.team-schedule-opponent small{display:block;color:#94a3b8;font-size:9px;margin-top:2px}.team-result{border-radius:999px;padding:4px 7px;font-size:10px;font-weight:900;background:#e2e8f0;color:#475569;white-space:nowrap}.team-result.win{background:#dcfce7;color:#166534}.team-result.loss{background:#fee2e2;color:#991b1b}.team-result.progress{background:#fef3c7;color:#854d0e}
+.team-page-link{border:0;background:none;padding:0;color:#1F3864;font:inherit;font-weight:700;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#bfdbfe;text-underline-offset:2px}
 
 /* Cloud sync status */
 .cloud-status{background:#fff;border:1.5px solid #B5D4F4;color:#1F3864;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;text-align:center;margin-bottom:10px}
@@ -437,6 +442,7 @@ Tim/Rick"></textarea>
     <button class="nvbtn active" data-nav="score">Score</button>
     <button class="nvbtn" data-nav="week">Week</button>
     <button class="nvbtn" data-nav="season">Season</button>
+    <button class="nvbtn" data-nav="teams">Teams</button>
     <button class="nvbtn" data-nav="baggers">4 Baggers</button>
     <button class="nvbtn" data-nav="playoffs">Playoffs</button>
     <button class="nvbtn" data-nav="share">Share</button>
@@ -486,6 +492,12 @@ Tim/Rick"></textarea>
         <tbody id="season-body"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- TEAMS TAB -->
+  <div id="tab-teams" class="tab">
+    <select id="team-page-select"><option value="">Select a team...</option></select>
+    <div id="team-page-content"></div>
   </div>
 
   <!-- 4 BAGGERS TAB -->
@@ -919,7 +931,7 @@ function renderWeekStandings() {
   document.getElementById('week-body').innerHTML = sorted.map(function(t, i) {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
     return '<tr><td>' + rankCell(i) + '</td>'
-      + '<td><span style="font-size:10px;color:#999">T' + tnum(t) + '</span> ' + t + '</td>'
+      + '<td><span style="font-size:10px;color:#999">T' + tnum(t) + '</span> <button class="team-page-link" onclick="openTeamPage(decodeURIComponent(\'' + encodeURIComponent(t) + '\'))">' + t + '</button></td>'
       + '<td><span class="pill green">' + d.wins + '</span></td>'
       + '<td><span class="pill orange">' + d.losses + '</span></td>'
       + '<td style="color:#999">' + pct + '</td></tr>';
@@ -934,13 +946,83 @@ function renderSeasonStandings() {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
     var tier = i < 10 ? '<span class="tier1">T1</span>' : '<span class="tier2">T2</span>';
     return '<tr><td>' + rankCell(i) + '</td>'
-      + '<td><span style="font-size:10px;color:#999">T' + tnum(t) + '</span> ' + t + ' ' + tier + '</td>'
+      + '<td><span style="font-size:10px;color:#999">T' + tnum(t) + '</span> <button class="team-page-link" onclick="openTeamPage(decodeURIComponent(\'' + encodeURIComponent(t) + '\'))">' + t + '</button> ' + tier + '</td>'
       + '<td><span class="pill green">' + d.wins + '</span></td>'
       + '<td><span class="pill orange">' + d.losses + '</span></td>'
       + '<td>' + d.played + '</td>'
       + '<td style="color:#999">' + pct + '</td></tr>';
   }).join('');
 }
+
+function populateTeamPageSelect(){
+  var select = document.getElementById('team-page-select'); if (!select) return;
+  var current = select.value;
+  select.innerHTML = '<option value="">Select a team...</option>';
+  TEAMS.forEach(function(team){
+    var option = document.createElement('option'); option.value = team; option.textContent = team; select.appendChild(option);
+  });
+  select.value = TEAMS.indexOf(current) >= 0 ? current : (TEAMS[0] || '');
+}
+function getTeamSchedule(team){
+  var schedule = [], opponents = {};
+  for (var w = 1; w <= WEEKS; w++) {
+    for (var s = 0; s < GPW; s++) {
+      getMatchups(w - 1,s).forEach(function(mu,mi){
+        if (mu.a !== team && mu.b !== team) return;
+        var side = mu.a === team ? 'a' : 'b';
+        var opponent = side === 'a' ? mu.b : mu.a;
+        var match = getMatch(w,s,mi), wins = 0, losses = 0;
+        [match.g1,match.g2,match.g3].forEach(function(winner){
+          if (winner === side) wins++;
+          else if (winner === 'a' || winner === 'b') losses++;
+        });
+        var played = wins + losses, complete = played === 3;
+        schedule.push({week:w,round:s+1,opponent:opponent,board:mu.board,wins:wins,losses:losses,played:played,complete:complete});
+        if (!opponents[opponent]) opponents[opponent] = {scheduled:0,completed:0,wins:0,losses:0,matchWins:0,matchLosses:0};
+        var history = opponents[opponent];
+        history.scheduled++; history.wins += wins; history.losses += losses;
+        if (complete) { history.completed++; if (wins > losses) history.matchWins++; else history.matchLosses++; }
+      });
+    }
+  }
+  return {schedule:schedule,opponents:opponents};
+}
+function renderTeamPage(){
+  var select = document.getElementById('team-page-select'), content = document.getElementById('team-page-content');
+  if (!select || !content) return;
+  if (select.options.length <= 1) populateTeamPageSelect();
+  var team = select.value || TEAMS[0];
+  if (!team) { content.innerHTML = ''; return; }
+  select.value = team;
+  var totals = calcSeasonTotals(null)[team] || {wins:0,losses:0,played:0};
+  var pct = totals.played ? Math.round(totals.wins / totals.played * 100) + '%' : '--';
+  var detail = getTeamSchedule(team), opponentNames = Object.keys(detail.opponents).sort(function(a,b){
+    return detail.opponents[b].scheduled - detail.opponents[a].scheduled || a.localeCompare(b);
+  });
+  var html = '<div class="team-profile-head"><h2>' + team + '</h2><p>Team ' + tnum(team) + ' · ' + (leagueSettings.seasonName || 'Current Season') + '</p></div>'
+    + '<div class="team-stat-grid"><div class="team-stat"><strong>' + totals.wins + '-' + totals.losses + '</strong><span>Game Record</span></div><div class="team-stat"><strong>' + totals.played + '</strong><span>Games Played</span></div><div class="team-stat"><strong>' + pct + '</strong><span>Win Rate</span></div></div>'
+    + '<div class="card"><div class="card-hdr navy"><span>Opponent History</span><span class="csub">Meetings and game record</span></div><div style="padding:10px" class="opponent-history">';
+  html += opponentNames.map(function(opponent){
+    var h = detail.opponents[opponent];
+    return '<div class="opponent-card"><strong>' + opponent + '</strong><span>Met ' + h.scheduled + 'x · ' + h.completed + ' completed</span><span class="opponent-record">' + h.wins + '-' + h.losses + '</span></div>';
+  }).join('') || '<div style="text-align:center;color:#999;padding:12px">No opponents scheduled.</div>';
+  html += '</div></div><div class="card"><div class="card-hdr navy"><span>Full Season Schedule</span><span class="csub">' + detail.schedule.length + ' matchups</span></div><div style="padding:10px" class="team-schedule">';
+  html += detail.schedule.map(function(game){
+    var resultText = 'Upcoming', resultClass = '';
+    if (game.complete) { resultText = (game.wins > game.losses ? 'W ' : 'L ') + game.wins + '-' + game.losses; resultClass = game.wins > game.losses ? ' win' : ' loss'; }
+    else if (game.played) { resultText = game.wins + '-' + game.losses; resultClass = ' progress'; }
+    return '<div class="team-schedule-game"><div class="team-schedule-when">Week ' + game.week + '<br>Round ' + game.round + '</div><div class="team-schedule-opponent">' + game.opponent + '<small>' + game.board + '</small></div><span class="team-result' + resultClass + '">' + resultText + '</span></div>';
+  }).join('');
+  html += '</div></div>';
+  content.innerHTML = html;
+}
+function openTeamPage(team){
+  var select = document.getElementById('team-page-select'); if (select) select.value = team;
+  var button = document.querySelector('[data-nav="teams"]'); if (button) button.click();
+  renderTeamPage();
+}
+window.openTeamPage = openTeamPage;
+document.getElementById('team-page-select').addEventListener('change',renderTeamPage);
 
 // ── Season week filter buttons ────────────────────────────────────────────────
 document.getElementById('wk-filter').addEventListener('click', function(e) {
@@ -964,6 +1046,7 @@ document.querySelector('.nav').addEventListener('click', function(e) {
   btn.classList.add('active');
   if (id === 'week') renderWeekStandings();
   if (id === 'season') renderSeasonStandings();
+  if (id === 'teams') renderTeamPage();
   if (id === 'baggers') renderBaggers();
   if (id === 'playoffs') renderPlayoffs();
   if (id === 'share') { populateShareWeeks(); }
@@ -1185,6 +1268,7 @@ function applyLeagueSettings(settings) {
   TEAMS = leagueSettings.teams.slice();
   RR = buildRR(TEAMS);
   rebuildWeekControls();
+  populateTeamPageSelect();
   updateLeagueHeader();
   fillAdminSeasonForm();
 }
@@ -1257,6 +1341,7 @@ function renderEverythingSafe() {
   try { renderMatchups(); } catch(e) {}
   try { renderWeekStandings(); } catch(e) {}
   try { renderSeasonStandings(); } catch(e) {}
+  try { renderTeamPage(); } catch(e) {}
   try { renderBaggers(); } catch(e) {}
   try { renderPlayoffs(); } catch(e) {}
 }
@@ -1700,6 +1785,7 @@ function loadTestPlayoffDemo(){
 // ── Init ──────────────────────────────────────────────────────────────────────
 (function init() {
   rebuildWeekControls();
+  populateTeamPageSelect();
   updateLeagueHeader();
   fillAdminSeasonForm();
   load();
@@ -1741,6 +1827,7 @@ function renderEverything() {
   try { renderMatchups(); } catch(e) {}
   try { renderWeekStandings(); } catch(e) {}
   try { renderSeasonStandings(); } catch(e) {}
+  try { renderTeamPage(); } catch(e) {}
   try { renderBaggers(); } catch(e) {}
   try { renderPlayoffs(); } catch(e) {}
 }
