@@ -465,7 +465,7 @@ Tim/Rick"></textarea>
         <span class="csub" id="week-sub">Select a week</span>
       </div>
       <table>
-        <thead><tr><th>#</th><th>Team</th><th>Wins</th><th>Win%</th></tr></thead>
+        <thead><tr><th>#</th><th>Team</th><th>W</th><th>L</th><th>Win%</th></tr></thead>
         <tbody id="week-body"></tbody>
       </table>
     </div>
@@ -482,7 +482,7 @@ Tim/Rick"></textarea>
         <span class="csub" id="season-sub">Full season</span>
       </div>
       <table>
-        <thead><tr><th>#</th><th>Team</th><th>Wins</th><th>Played</th><th>Win%</th></tr></thead>
+        <thead><tr><th>#</th><th>Team</th><th>W</th><th>L</th><th>Played</th><th>Win%</th></tr></thead>
         <tbody id="season-body"></tbody>
       </table>
     </div>
@@ -877,13 +877,13 @@ document.getElementById('slot-sel').addEventListener('change', function() {
 // ── Standings ─────────────────────────────────────────────────────────────────
 function calcWeekTotals(w) {
   var tot = {};
-  TEAMS.forEach(function(t) { tot[t] = { wins: 0, played: 0 }; });
+  TEAMS.forEach(function(t) { tot[t] = { wins: 0, losses: 0, played: 0 }; });
   for (var s = 0; s < GPW; s++) {
     getMatchups(w - 1, s).forEach(function(mu, mi) {
       var m = getMatch(w, s, mi);
       [m.g1, m.g2, m.g3].forEach(function(winner) {
-        if (winner === 'a') { tot[mu.a].wins++; tot[mu.a].played++; tot[mu.b].played++; }
-        else if (winner === 'b') { tot[mu.b].wins++; tot[mu.b].played++; tot[mu.a].played++; }
+        if (winner === 'a') { tot[mu.a].wins++; tot[mu.b].losses++; tot[mu.a].played++; tot[mu.b].played++; }
+        else if (winner === 'b') { tot[mu.b].wins++; tot[mu.a].losses++; tot[mu.b].played++; tot[mu.a].played++; }
       });
     });
   }
@@ -892,10 +892,10 @@ function calcWeekTotals(w) {
 
 function calcSeasonTotals(upto) {
   var tot = {};
-  TEAMS.forEach(function(t) { tot[t] = { wins: 0, played: 0 }; });
+  TEAMS.forEach(function(t) { tot[t] = { wins: 0, losses: 0, played: 0 }; });
   for (var w = 1; w <= (upto || WEEKS); w++) {
     var wt = calcWeekTotals(w);
-    TEAMS.forEach(function(t) { tot[t].wins += wt[t].wins; tot[t].played += wt[t].played; });
+    TEAMS.forEach(function(t) { tot[t].wins += wt[t].wins; tot[t].losses += wt[t].losses; tot[t].played += wt[t].played; });
   }
   return tot;
 }
@@ -909,25 +909,26 @@ function rankCell(i) {
 
 function renderWeekStandings() {
   if (!curWeek) {
-    document.getElementById('week-body').innerHTML = '<tr><td colspan="4" style="color:#999;padding:14px;text-align:center">Select a week first</td></tr>';
+    document.getElementById('week-body').innerHTML = '<tr><td colspan="5" style="color:#999;padding:14px;text-align:center">Select a week first</td></tr>';
     return;
   }
   document.getElementById('week-title').textContent = 'Week ' + curWeek + ' Standings';
   document.getElementById('week-sub').textContent = 'Live';
   var tot = calcWeekTotals(curWeek);
-  var sorted = TEAMS.slice().sort(function(a, b) { return tot[b].wins - tot[a].wins; });
+  var sorted = TEAMS.slice().sort(function(a, b) { return (tot[b].wins - tot[a].wins) || (tot[a].losses - tot[b].losses) || (tnum(a)-tnum(b)); });
   document.getElementById('week-body').innerHTML = sorted.map(function(t, i) {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
     return '<tr><td>' + rankCell(i) + '</td>'
       + '<td><span style="font-size:10px;color:#999">T' + tnum(t) + '</span> ' + t + '</td>'
       + '<td><span class="pill green">' + d.wins + '</span></td>'
+      + '<td><span class="pill orange">' + d.losses + '</span></td>'
       + '<td style="color:#999">' + pct + '</td></tr>';
   }).join('');
 }
 
 function renderSeasonStandings() {
   var tot = calcSeasonTotals(seasonFilter);
-  var sorted = TEAMS.slice().sort(function(a, b) { return tot[b].wins - tot[a].wins; });
+  var sorted = TEAMS.slice().sort(function(a, b) { return (tot[b].wins - tot[a].wins) || (tot[a].losses - tot[b].losses) || (tnum(a)-tnum(b)); });
   document.getElementById('season-sub').textContent = seasonFilter ? 'Through Wk ' + seasonFilter : 'Full season';
   document.getElementById('season-body').innerHTML = sorted.map(function(t, i) {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
@@ -935,6 +936,7 @@ function renderSeasonStandings() {
     return '<tr><td>' + rankCell(i) + '</td>'
       + '<td><span style="font-size:10px;color:#999">T' + tnum(t) + '</span> ' + t + ' ' + tier + '</td>'
       + '<td><span class="pill green">' + d.wins + '</span></td>'
+      + '<td><span class="pill orange">' + d.losses + '</span></td>'
       + '<td>' + d.played + '</td>'
       + '<td style="color:#999">' + pct + '</td></tr>';
   }).join('');
@@ -1059,21 +1061,21 @@ function buildWeekText(w) {
     });
   }
   txt += '\n' + '─'.repeat(26) + '\nSTANDINGS AFTER WEEK ' + w + '\n';
-  var tot = calcSeasonTotals(w), sorted = TEAMS.slice().sort(function(a, b) { return tot[b].wins - tot[a].wins; });
+  var tot = calcSeasonTotals(w), sorted = TEAMS.slice().sort(function(a, b) { return (tot[b].wins - tot[a].wins) || (tot[a].losses - tot[b].losses) || (tnum(a)-tnum(b)); });
   sorted.forEach(function(t, i) {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
-    txt += (i + 1) + '. T' + tnum(t) + ' ' + t + ' — ' + d.wins + ' wins (' + pct + ')\n';
+    txt += (i + 1) + '. T' + tnum(t) + ' ' + t + ' — ' + d.wins + '-' + d.losses + ' (' + pct + ')\n';
   });
   txt += '─'.repeat(26) + '\n#BagsLeague2026';
   return txt;
 }
 
 function buildSeasonText() {
-  var tot = calcSeasonTotals(null), sorted = TEAMS.slice().sort(function(a, b) { return tot[b].wins - tot[a].wins; });
+  var tot = calcSeasonTotals(null), sorted = TEAMS.slice().sort(function(a, b) { return (tot[b].wins - tot[a].wins) || (tot[a].losses - tot[b].losses) || (tnum(a)-tnum(b)); });
   var txt = 'BAGS LEAGUE 2026 — SEASON STANDINGS\n' + TODAY + '\n' + '─'.repeat(26) + '\n';
   sorted.forEach(function(t, i) {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
-    txt += (i + 1) + '. T' + tnum(t) + ' ' + t + ' — ' + d.wins + ' wins (' + pct + ')\n';
+    txt += (i + 1) + '. T' + tnum(t) + ' ' + t + ' — ' + d.wins + '-' + d.losses + ' (' + pct + ')\n';
   });
   txt += '─'.repeat(26) + '\n20 Teams | 11 Weeks | #BagsLeague2026';
   return txt;
@@ -1664,7 +1666,7 @@ function renderPlayoffs(){
 function generatePlayoffsFromStandings(){
   getPlayoffTitlesFromAdmin();
   var tot = calcSeasonTotals(null);
-  var sorted = TEAMS.slice().sort(function(a,b){ return (tot[b].wins - tot[a].wins) || (tnum(a)-tnum(b)); });
+  var sorted = TEAMS.slice().sort(function(a,b){ return (tot[b].wins - tot[a].wins) || (tot[a].losses - tot[b].losses) || (tnum(a)-tnum(b)); });
   if (sorted.length < 20) { alert('This playoff setup needs 20 teams.'); return; }
   playoffState.generated = true;
   playoffState.locked = true;
