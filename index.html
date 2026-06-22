@@ -355,7 +355,7 @@ body::before{
   <div class="test-lab-banner">TEST LAB — SAFE TO EXPERIMENT<small>Uses separate scores and phone backups from the live league</small></div>
   <div class="hdr">
   <h1 id="league-title">Bags League Test Lab</h1>
-  <div class="sub" id="league-sub">20 Teams &nbsp;|&nbsp; 11 Weeks &nbsp;|&nbsp; Live Scoring</div>
+  <div class="sub" id="league-sub">20 Teams &nbsp;|&nbsp; 10 Regular Weeks &nbsp;|&nbsp; Playoffs Week 11</div>
 </div>
 
   <div class="save-bar" id="save-bar">&#10003; &nbsp;All data saved</div>
@@ -394,7 +394,7 @@ body::before{
       <input id="admin-season-name" type="text" placeholder="Season name, e.g. Summer 2026">
       <input id="admin-weeks" type="number" min="1" max="30" placeholder="Weeks">
     </div>
-    <input id="admin-playoffs" type="number" min="" max="30" placeholder="Playoffs start week (optional)">
+    <input id="admin-playoffs" type="number" min="11" max="30" placeholder="Playoffs start: Week 11">
     <textarea id="admin-teams" placeholder="Enter teams, one per line, like:
 JT/Kathy
 Gema/Bill
@@ -584,7 +584,7 @@ Tim/Rick"></textarea>
 
 <script>
 // ── Teams & Constants ─────────────────────────────────────────────────────────
-var WEEKS = 11, GPW = 3;
+var WEEKS = 10, GPW = 3;
 var TEAMS = [
   'JT/Kathy','Gema/Bill','Tim/Rick','Brian/Mark','Terry/Claire',
   'John/Lauren','Steph/Chris','Shawn/Kevin','Adrian/Diana','Lauren/Mimmo',
@@ -630,7 +630,7 @@ var results = {}, baggers = {};
 var archives = {};
 var viewingArchive = '';
 var playoffState = { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''}, bracketLayout:null };
-var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 11, playoffsStart: '', teams: TEAMS.slice() };
+var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice() };
 var curWeek = null, curSlot = 0, seasonFilter = null, baggerCnt = 1, baggerWeek = null;
 
 // Admin mode is enabled only after Firebase Authentication verifies the approved user.
@@ -1167,7 +1167,7 @@ function buildSeasonText() {
     var d = tot[t], pct = d.played ? Math.round(d.wins / d.played * 100) + '%' : '--';
     txt += (i + 1) + '. T' + tnum(t) + ' ' + t + ' — ' + d.wins + '-' + d.losses + ' (' + pct + ')\n';
   });
-  txt += '─'.repeat(26) + '\n20 Teams | 11 Weeks | #BagsLeague2026';
+  txt += '─'.repeat(26) + '\n' + TEAMS.length + ' Teams | ' + WEEKS + ' Regular Weeks | Playoffs Wk ' + (leagueSettings.playoffsStart || (WEEKS + 1)) + ' | #BagsLeague2026';
   return txt;
 }
 
@@ -1264,11 +1264,16 @@ function normalizeTeamsText(txt) {
 }
 function applyLeagueSettings(settings) {
   settings = settings || {};
+  var regularWeeks = parseInt(settings.weeks || leagueSettings.weeks || 10);
+  var playoffsStart = settings.playoffsStart || leagueSettings.playoffsStart || '';
+  // Migrate the original 11-week setting to 10 regular weeks plus playoffs in Week 11.
+  if (regularWeeks === 11 && !playoffsStart) { regularWeeks = 10; playoffsStart = '11'; }
+  if (!playoffsStart) playoffsStart = String(regularWeeks + 1);
   leagueSettings = {
     leagueName: settings.leagueName || settings.title || leagueSettings.leagueName || 'Bags League',
     seasonName: settings.seasonName || leagueSettings.seasonName || 'Current',
-    weeks: parseInt(settings.weeks || leagueSettings.weeks || 11),
-    playoffsStart: settings.playoffsStart || '',
+    weeks: regularWeeks,
+    playoffsStart: playoffsStart,
     teams: (settings.teams && settings.teams.length ? settings.teams : (leagueSettings.teams && leagueSettings.teams.length ? leagueSettings.teams : TEAMS)).slice()
   };
   WEEKS = leagueSettings.weeks;
@@ -1287,7 +1292,7 @@ function updateLeagueHeader() {
   var sub = document.getElementById('league-sub');
   if (sub) {
     var seasonLabel = '';
-    sub.innerHTML = seasonLabel + TEAMS.length + ' Teams &nbsp;|&nbsp; ' + WEEKS + ' Weeks &nbsp;|&nbsp; ' + (viewingArchive ? 'Archived: ' + viewingArchive : 'Live Scoring');
+    sub.innerHTML = seasonLabel + TEAMS.length + ' Teams &nbsp;|&nbsp; ' + WEEKS + ' Regular Weeks &nbsp;|&nbsp; Playoffs Week ' + (leagueSettings.playoffsStart || (WEEKS + 1));
   }
 }
 function rebuildWeekControls() {
@@ -1333,7 +1338,7 @@ function viewSeason(key) {
   viewingArchive = key || '';
   if (viewingArchive && archives[viewingArchive]) {
     var a = archives[viewingArchive];
-    applyLeagueSettings(a.settings || {seasonName:viewingArchive, weeks:11, teams:TEAMS});
+    applyLeagueSettings(a.settings || {seasonName:viewingArchive, weeks:10, playoffsStart:'11', teams:TEAMS});
     results = a.results || {};
     baggers = a.baggers || {};
     playoffState = a.playoffs || playoffState;
@@ -2054,7 +2059,7 @@ startCloudSync();
       leagueName: document.getElementById('admin-league-name').value.trim() || 'Bags League',
       seasonName: document.getElementById('admin-season-name').value.trim() || 'Current',
       weeks: weeks,
-      playoffsStart: document.getElementById('admin-playoffs').value.trim(),
+      playoffsStart: document.getElementById('admin-playoffs').value.trim() || '11',
       teams: teams
     });
     getPlayoffTitlesFromAdmin();
@@ -2090,9 +2095,9 @@ startCloudSync();
     if (!leagueName) return;
     var seasonName = prompt('New season name:', suggestedYear);
     if (!seasonName) return;
-    var weeks = parseInt(prompt('How many regular-season weeks?', leagueSettings.weeks || 11) || '');
+    var weeks = parseInt(prompt('How many regular-season weeks?', leagueSettings.weeks || 10) || '');
     if (!weeks || weeks < 1) { alert('Invalid weeks.'); return; }
-    var playoffsStart = prompt('Playoffs start week? Leave blank if none yet:', '') || '';
+    var playoffsStart = prompt('Playoffs start week?', leagueSettings.playoffsStart || '11') || '11';
     var teamsText = prompt('Teams: keep current teams? Type YES to keep them, or Cancel to stop.', 'YES');
     if (teamsText === null) return;
     var teams = (teamsText.toUpperCase() === 'YES') ? (leagueSettings.teams || TEAMS).slice() : normalizeTeamsText(teamsText);
