@@ -621,7 +621,7 @@ function getMatchups(week0, slot) {
   var round = RR[(week0 * GPW + slot) % RR.length];
   var boards = seededShuffle([1,2,3,4,5,6,7,8], week0 * 999 + 42);
   return round.map(function(pair, gi) {
-    return { a: pair[0], b: pair[1], board: (slot === 0 && gi < 8) ? 'Board ' + boards[gi] : 'Match ' + (gi + 1) };
+    return { a: pair[0], b: pair[1], board: slot === 0 ? (gi < 8 ? 'Board ' + boards[gi] : 'Board TBD') : 'Players choose board' };
   });
 }
 
