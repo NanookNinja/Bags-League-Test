@@ -148,7 +148,10 @@ input[type=text]:focus{border-color:#7B2D8B;background:#fff}
 .opponent-history{display:grid;gap:7px;margin-bottom:12px}.opponent-card{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:9px 10px;display:grid;grid-template-columns:1fr auto;gap:4px 10px}.opponent-card strong{font-size:12px;color:#172033}.opponent-card span{font-size:10px;color:#64748b}.opponent-record{grid-row:1/3;grid-column:2;font-size:13px!important;font-weight:900;color:#0f766e!important;align-self:center}
 .team-schedule{display:grid;gap:7px}.team-schedule-game{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:9px 10px;display:grid;grid-template-columns:65px 1fr auto;align-items:center;gap:8px}.team-schedule-when{font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase}.team-schedule-opponent{font-size:12px;font-weight:800;color:#172033}.team-schedule-opponent small{display:block;color:#94a3b8;font-size:9px;margin-top:2px}.team-result{border-radius:999px;padding:4px 7px;font-size:10px;font-weight:900;background:#e2e8f0;color:#475569;white-space:nowrap}.team-result.win{background:#dcfce7;color:#166534}.team-result.loss{background:#fee2e2;color:#991b1b}.team-result.progress{background:#fef3c7;color:#854d0e}
 .team-week-block{display:grid;grid-template-columns:62px 1fr;border:2px solid #bfdbfe;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 3px 9px rgba(15,23,42,.07)}.team-week-block:nth-child(even){border-color:#c4b5fd}.team-week-label{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#1F3864,#2E75B6);color:#fff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.team-week-label strong{font-size:24px;line-height:1;margin-top:3px}.team-week-block:nth-child(even) .team-week-label{background:linear-gradient(180deg,#5b21b6,#7c3aed)}.team-week-rounds{display:grid}.team-week-round{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:8px;padding:9px;border-bottom:1px solid #e2e8f0;min-height:57px}.team-week-round:last-child{border-bottom:0}.team-round-label{font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase}.team-round-opponent{font-size:12px;font-weight:900;color:#172033}.team-round-opponent small{display:block;font-size:9px;color:#94a3b8;font-weight:700;margin-top:2px}
+.team-week-date{font-size:8px;margin-top:5px;opacity:.82;text-transform:none;letter-spacing:0;text-align:center;line-height:1.2}.calendar-notices{display:grid;gap:6px;margin-bottom:10px}.calendar-notice{display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:11px;padding:8px 10px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:10px;font-weight:800}.calendar-notice.off{background:#eff6ff;border-color:#93c5fd;color:#1e40af}.calendar-notice strong{font-size:11px}.calendar-notice span{text-align:right}
+.team-week-block{position:relative}.team-week-block.has-rainout{padding-top:28px;border-color:#60a5fa}.rainout-ribbon{position:absolute;z-index:2;left:0;right:0;top:0;height:28px;display:flex;align-items:center;justify-content:center;gap:5px;background:linear-gradient(90deg,#dbeafe,#93c5fd,#dbeafe);color:#1e3a8a;font-size:10px;font-weight:1000;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid #60a5fa}.rainout-btn{margin-top:7px;border:1px solid rgba(255,255,255,.65);border-radius:8px;padding:4px 5px;background:rgba(255,255,255,.16);color:#fff;font-size:9px;font-weight:900;cursor:pointer;line-height:1}.rainout-btn:active{transform:scale(.97)}
 .team-page-link{border:0;background:none;padding:0;color:#1F3864;font:inherit;font-weight:700;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#bfdbfe;text-underline-offset:2px}
+.week-start-row{display:none;align-items:center;justify-content:space-between;gap:8px;margin:-3px 0 9px;padding:8px 10px;border-radius:11px;background:#eef6ff;border:1px solid #bfdbfe}.week-date-status{font-size:11px;font-weight:800;color:#1e40af}.week-start-btn{border:0;border-radius:9px;padding:8px 10px;background:#16a34a;color:#fff;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}
 .team-collapse{background:#fff;border:1px solid #dbe3ef;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 10px rgba(15,23,42,.07)}.team-collapse summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#183153,#2563eb);color:#fff;cursor:pointer;list-style:none;font-size:13px;font-weight:900}.team-collapse summary::-webkit-details-marker{display:none}.team-collapse summary small{font-size:10px;font-weight:700;opacity:.75;margin-left:auto}.team-collapse-arrow{font-size:17px;transition:transform .18s}.team-collapse[open] .team-collapse-arrow{transform:rotate(180deg)}.team-collapse-content{padding:10px}
 
 /* Cloud sync status */
@@ -453,6 +456,7 @@ Tim/Rick"></textarea>
   <!-- SCORE TAB -->
   <div id="tab-score" class="tab active">
     <select id="week-sel"><option value="">Select week...</option></select>
+    <div class="week-start-row" id="week-start-row"><span class="week-date-status" id="week-date-status"></span><button type="button" class="week-start-btn" id="week-start-btn">Start Week Today</button></div>
     <select id="slot-sel" style="display:none">
       <option value="0">Round 1</option>
       <option value="1">Round 2</option>
@@ -631,7 +635,13 @@ var results = {}, baggers = {};
 var archives = {};
 var viewingArchive = '';
 var playoffState = { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''}, bracketLayout:null };
-var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice() };
+var DEFAULT_WEEK_DATES = {1:'2026-05-28',2:'2026-06-04',3:'2026-06-18',4:'2026-06-25',5:'2026-07-09',6:'2026-07-16',7:'2026-07-23',8:'2026-07-30',9:'2026-08-06',10:'2026-08-13'};
+var DEFAULT_CALENDAR_NOTES = [
+  {date:'2026-06-11',status:'Rainout',note:'Makeup date TBD'},
+  {date:'2026-07-02',status:'Off',note:'4th of July break'}
+];
+var DEFAULT_RAINOUTS = [{week:3,date:'2026-06-11'}];
+var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice() };
 var curWeek = null, curSlot = 0, seasonFilter = null, baggerCnt = 1, baggerWeek = null;
 
 // Admin mode is enabled only after Firebase Authentication verifies the approved user.
@@ -693,6 +703,7 @@ window.setAdminMode = function(enabled, email){
   if (panel) panel.classList.toggle('show', ADMIN_MODE);
   if (scoreLockControl) scoreLockControl.classList.toggle('show', ADMIN_MODE);
   if (pageSwitch) pageSwitch.classList.toggle('show', ADMIN_MODE);
+  try { updateWeekStartControl(); } catch(e) {}
   setAdminPage('scoring', false);
   setScoreEditUnlocked(false);
   var sessionEmail = document.getElementById('admin-session-email');
@@ -747,6 +758,9 @@ function recordGame(w, s, mi, game, winner) {
   if (!ADMIN_MODE) { return; }
   if (!SCORE_EDIT_UNLOCKED) { return; }
   if (playoffState && playoffState.locked) { alert('Regular season is locked. Unlock by starting a new season or restoring a backup.'); return; }
+  ensureWeekStarted(w);
+  rebuildWeekControls();
+  updateWeekStartControl();
   var m = getMatch(w, s, mi);
   // Toggle off if same value clicked again
   if (m[game] === winner) winner = null;
@@ -870,6 +884,7 @@ document.getElementById('match-list').addEventListener('click', function(e) {
 // ── Week select & slot select ─────────────────────────────────────────────────
 document.getElementById('week-sel').addEventListener('change', function() {
   curWeek = parseInt(this.value) || null;
+  updateWeekStartControl();
   var ss = document.getElementById('slot-sel');
   var qr = document.getElementById('qs-row');
   if (!curWeek) {
@@ -883,6 +898,7 @@ document.getElementById('week-sel').addEventListener('change', function() {
   curSlot = 0; ss.value = '0';
   renderMatchups();
 });
+document.getElementById('week-start-btn').addEventListener('click',startWeekToday);
 
 document.getElementById('slot-sel').addEventListener('change', function() {
   renderMatchups();
@@ -926,7 +942,7 @@ function renderWeekStandings() {
     document.getElementById('week-body').innerHTML = '<tr><td colspan="5" style="color:#999;padding:14px;text-align:center">Select a week first</td></tr>';
     return;
   }
-  document.getElementById('week-title').textContent = 'Week ' + curWeek + ' Standings';
+  document.getElementById('week-title').textContent = 'Week ' + curWeek + ' Standings' + (getWeekDate(curWeek) ? ' — ' + formatLeagueDate(getWeekDate(curWeek),true) : '');
   document.getElementById('week-sub').textContent = 'Live';
   var tot = calcWeekTotals(curWeek);
   var sorted = TEAMS.slice().sort(function(a, b) { return (tot[b].wins - tot[a].wins) || (tot[a].losses - tot[b].losses) || (tnum(a)-tnum(b)); });
@@ -979,7 +995,7 @@ function getTeamSchedule(team){
           else if (winner === 'a' || winner === 'b') losses++;
         });
         var played = wins + losses, complete = played === 3;
-        schedule.push({week:w,round:s+1,opponent:opponent,board:mu.board,wins:wins,losses:losses,played:played,complete:complete});
+        schedule.push({week:w,date:getWeekDate(w),round:s+1,opponent:opponent,board:mu.board,wins:wins,losses:losses,played:played,complete:complete});
         if (!opponents[opponent]) opponents[opponent] = {scheduled:0,completed:0,wins:0,losses:0,matchWins:0,matchLosses:0};
         var history = opponents[opponent];
         history.scheduled++; history.wins += wins; history.losses += losses;
@@ -1002,12 +1018,18 @@ function renderTeamPage(){
     return detail.opponents[b].scheduled - detail.opponents[a].scheduled || a.localeCompare(b);
   });
   var html = '<div class="team-profile-head"><h2>' + team + '</h2><p>Team ' + tnum(team) + ' · ' + (leagueSettings.seasonName || 'Current Season') + '</p></div>'
-    + '<div class="team-stat-grid"><div class="team-stat"><strong>' + totals.wins + '-' + totals.losses + '</strong><span>Game Record</span></div><div class="team-stat"><strong>' + totals.played + '</strong><span>Games Played</span></div><div class="team-stat"><strong>' + pct + '</strong><span>Win Rate</span></div></div>'
-    + '<details class="team-collapse"><summary><span>Full Season Schedule</span><small>' + detail.schedule.length + ' matchups</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content team-schedule">';
+    + '<div class="team-stat-grid"><div class="team-stat"><strong>' + totals.wins + '-' + totals.losses + '</strong><span>Game Record</span></div><div class="team-stat"><strong>' + totals.played + '</strong><span>Games Played</span></div><div class="team-stat"><strong>' + pct + '</strong><span>Win Rate</span></div></div>';
+  var notes = leagueSettings.calendarNotes || [];
+  if (notes.length) html += '<div class="calendar-notices">' + notes.map(function(item){ return '<div class="calendar-notice ' + (item.status === 'Off' ? 'off' : '') + '"><strong>' + formatLeagueDate(item.date,false) + ' · ' + item.status + '</strong><span>' + item.note + '</span></div>'; }).join('') + '</div>';
+  html += '<details class="team-collapse"><summary><span>Full Season Schedule</span><small>' + detail.schedule.length + ' matchups</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content team-schedule">';
   for (var weekNumber = 1; weekNumber <= WEEKS; weekNumber++) {
     var weekGames = detail.schedule.filter(function(game){ return game.week === weekNumber; });
     if (!weekGames.length) continue;
-    html += '<div class="team-week-block"><div class="team-week-label"><span>Week</span><strong>' + weekNumber + '</strong></div><div class="team-week-rounds">';
+    var weekDate = weekGames[0].date ? formatLeagueDate(weekGames[0].date,true) : '';
+    var weekRainouts = (leagueSettings.rainouts || []).filter(function(item){ return Number(item.week) === weekNumber; });
+    var rainoutRibbon = weekRainouts.length ? '<div class="rainout-ribbon">🌧️ ' + weekRainouts.map(function(item){ return formatLeagueDate(item.date,true); }).join(', ') + ' Rained Out</div>' : '';
+    var rainoutButton = ADMIN_MODE && !isActualWeekDate(weekNumber) ? '<button class="rainout-btn" type="button" onclick="event.preventDefault();event.stopPropagation();rainOutWeek(' + weekNumber + ')">🌧 Rain Out</button>' : '';
+    html += '<div class="team-week-block' + (weekRainouts.length ? ' has-rainout' : '') + '">' + rainoutRibbon + '<div class="team-week-label"><span>Week</span><strong>' + weekNumber + '</strong>' + (weekDate ? '<span class="team-week-date">' + weekDate + '</span>' : '') + rainoutButton + '</div><div class="team-week-rounds">';
     html += weekGames.map(function(game){
       var resultText = 'Upcoming', resultClass = '';
       if (game.complete) { resultText = (game.wins > game.losses ? 'W ' : 'L ') + game.wins + '-' + game.losses; resultClass = game.wins > game.losses ? ' win' : ' loss'; }
@@ -1135,7 +1157,8 @@ function renderBaggers() {
 var TODAY = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 function buildWeekText(w) {
-  var txt = 'BAGS LEAGUE 2026 — WEEK ' + w + ' RESULTS\n' + TODAY + '\n' + '─'.repeat(26) + '\n';
+  var weekDate = getWeekDate(w);
+  var txt = 'BAGS LEAGUE 2026 — WEEK ' + w + ' RESULTS\n' + (weekDate ? formatLeagueDate(weekDate,false) : TODAY) + '\n' + '─'.repeat(26) + '\n';
   for (var s = 0; s < GPW; s++) {
     txt += '\nROUND ' + (s + 1) + '\n';
     getMatchups(w - 1, s).forEach(function(mu, mi) {
@@ -1276,7 +1299,11 @@ function applyLeagueSettings(settings) {
     seasonName: settings.seasonName || leagueSettings.seasonName || 'Current',
     weeks: regularWeeks,
     playoffsStart: playoffsStart,
-    teams: (settings.teams && settings.teams.length ? settings.teams : (leagueSettings.teams && leagueSettings.teams.length ? leagueSettings.teams : TEAMS)).slice()
+    teams: (settings.teams && settings.teams.length ? settings.teams : (leagueSettings.teams && leagueSettings.teams.length ? leagueSettings.teams : TEAMS)).slice(),
+    weekDates: Object.assign({},settings.weekDates || leagueSettings.weekDates || DEFAULT_WEEK_DATES),
+    actualWeekDates: Object.assign({},settings.actualWeekDates || leagueSettings.actualWeekDates || {}),
+    calendarNotes: (settings.calendarNotes || leagueSettings.calendarNotes || DEFAULT_CALENDAR_NOTES).slice(),
+    rainouts: (settings.rainouts || leagueSettings.rainouts || DEFAULT_RAINOUTS).slice()
   };
   WEEKS = leagueSettings.weeks;
   TEAMS = leagueSettings.teams.slice();
@@ -1285,6 +1312,7 @@ function applyLeagueSettings(settings) {
   populateTeamPageSelect();
   updateLeagueHeader();
   fillAdminSeasonForm();
+  updateWeekStartControl();
 }
 function updateLeagueHeader() {
   var title = document.getElementById('league-title');
@@ -1297,6 +1325,75 @@ function updateLeagueHeader() {
     sub.innerHTML = seasonLabel + TEAMS.length + ' Teams &nbsp;|&nbsp; ' + WEEKS + ' Regular Weeks &nbsp;|&nbsp; Playoffs Week ' + (leagueSettings.playoffsStart || (WEEKS + 1));
   }
 }
+function formatLeagueDate(dateValue,short){
+  if (!dateValue) return '';
+  var date = new Date(dateValue + 'T12:00:00');
+  if (isNaN(date.getTime())) return dateValue;
+  return date.toLocaleDateString(undefined,short ? {month:'short',day:'numeric'} : {weekday:'short',month:'short',day:'numeric'});
+}
+function localISODate(){
+  var now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+}
+function getWeekDate(week){
+  return (leagueSettings.actualWeekDates && leagueSettings.actualWeekDates[week]) || (leagueSettings.weekDates && leagueSettings.weekDates[week]) || '';
+}
+function isActualWeekDate(week){ return !!(leagueSettings.actualWeekDates && leagueSettings.actualWeekDates[week]); }
+function addDaysISO(dateValue,days){
+  var date = new Date(dateValue + 'T12:00:00');
+  date.setDate(date.getDate() + days);
+  return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+}
+function rainOutWeek(week){
+  week = Number(week);
+  if (!ADMIN_MODE || !week || week > WEEKS) return;
+  if (isActualWeekDate(week)) { alert('Week ' + week + ' has already been started, so its played date is protected.'); return; }
+  var postponedDate = leagueSettings.weekDates && leagueSettings.weekDates[week];
+  if (!postponedDate) { alert('Week ' + week + ' needs a scheduled date before it can be rained out.'); return; }
+  if (!confirm('Mark Week ' + week + ' (' + formatLeagueDate(postponedDate,false) + ') as rained out and move this week and the remaining schedule forward?')) return;
+  leagueSettings.rainouts = leagueSettings.rainouts || [];
+  var alreadyRecorded = leagueSettings.rainouts.some(function(item){ return Number(item.week) === week && item.date === postponedDate; });
+  if (!alreadyRecorded) leagueSettings.rainouts.push({week:week,date:postponedDate});
+  leagueSettings.calendarNotes = leagueSettings.calendarNotes || [];
+  var noteExists = leagueSettings.calendarNotes.some(function(item){ return item.date === postponedDate && item.status === 'Rainout'; });
+  if (!noteExists) leagueSettings.calendarNotes.push({date:postponedDate,status:'Rainout',note:'Week ' + week + ' postponed'});
+  var blocked = {};
+  leagueSettings.calendarNotes.forEach(function(item){ if (item.status === 'Off' || item.status === 'Rainout') blocked[item.date] = true; });
+  var nextDate = addDaysISO(postponedDate,7);
+  for (var w=week; w<=WEEKS; w++) {
+    if (isActualWeekDate(w)) continue;
+    while (blocked[nextDate]) nextDate = addDaysISO(nextDate,7);
+    leagueSettings.weekDates[w] = nextDate;
+    nextDate = addDaysISO(nextDate,7);
+  }
+  rebuildWeekControls();
+  updateWeekStartControl();
+  renderTeamPage();
+  save();
+}
+window.rainOutWeek = rainOutWeek;
+function ensureWeekStarted(week){
+  if (!week) return;
+  leagueSettings.actualWeekDates = leagueSettings.actualWeekDates || {};
+  if (!leagueSettings.actualWeekDates[week]) leagueSettings.actualWeekDates[week] = localISODate();
+}
+function updateWeekStartControl(){
+  var row = document.getElementById('week-start-row'), status = document.getElementById('week-date-status'), button = document.getElementById('week-start-btn');
+  if (!row || !status || !button) return;
+  if (!curWeek) { row.style.display='none'; return; }
+  row.style.display='flex';
+  var date = getWeekDate(curWeek);
+  status.textContent = (isActualWeekDate(curWeek) ? 'Played: ' : 'Scheduled: ') + (date ? formatLeagueDate(date,false) : 'Date TBD');
+  button.style.display = ADMIN_MODE && !isActualWeekDate(curWeek) ? 'block' : 'none';
+}
+function startWeekToday(){
+  if (!ADMIN_MODE || !curWeek) return;
+  ensureWeekStarted(curWeek);
+  rebuildWeekControls();
+  updateWeekStartControl();
+  renderTeamPage();
+  save();
+}
 function rebuildWeekControls() {
   var wsel = document.getElementById('week-sel');
   var bwsel = document.getElementById('bagger-week-sel');
@@ -1305,8 +1402,9 @@ function rebuildWeekControls() {
   if (bwsel) bwsel.innerHTML = '<option value="">Select week...</option>';
   if (wfilt) wfilt.innerHTML = '<button class="wfbtn active" data-filter="">All</button>';
   for (var w = 1; w <= WEEKS; w++) {
-    if (wsel) { var o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w; wsel.appendChild(o); }
-    if (bwsel) { var o2 = document.createElement('option'); o2.value = w; o2.textContent = 'Week ' + w; bwsel.appendChild(o2); }
+    var dateLabel = formatLeagueDate(getWeekDate(w),true);
+    if (wsel) { var o = document.createElement('option'); o.value = w; o.textContent = 'Week ' + w + (dateLabel ? ' — ' + dateLabel : ''); wsel.appendChild(o); }
+    if (bwsel) { var o2 = document.createElement('option'); o2.value = w; o2.textContent = 'Week ' + w + (dateLabel ? ' — ' + dateLabel : ''); bwsel.appendChild(o2); }
     if (wfilt) { var btn = document.createElement('button'); btn.className = 'wfbtn'; btn.textContent = 'Wk ' + w; btn.setAttribute('data-filter', w); wfilt.appendChild(btn); }
   }
   if (curWeek && curWeek <= WEEKS && wsel) wsel.value = curWeek;
@@ -1362,6 +1460,7 @@ function renderEverythingSafe() {
   
 function resetForNewSeason(settings) {
   applyLeagueSettings(settings);
+  leagueSettings.actualWeekDates = {};
   results = {};
   baggers = {};
   playoffState = { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''}, bracketLayout:(playoffState && playoffState.bracketLayout) || null };
