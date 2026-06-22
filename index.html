@@ -623,8 +623,11 @@ function seededShuffle(arr, seed) {
 }
 
 function getMatchups(week0, slot) {
-  var round = RR[(week0 * GPW + slot) % RR.length];
-  var boards = seededShuffle([1,2,3,4,5,6,7,8], week0 * 999 + 42);
+  var displayWeek = week0 + 1;
+  var sourceWeek = leagueSettings && leagueSettings.scheduleWeekMap && leagueSettings.scheduleWeekMap[displayWeek] ? Number(leagueSettings.scheduleWeekMap[displayWeek]) : displayWeek;
+  var sourceWeek0 = sourceWeek - 1;
+  var round = RR[(sourceWeek0 * GPW + slot) % RR.length];
+  var boards = seededShuffle([1,2,3,4,5,6,7,8], sourceWeek0 * 999 + 42);
   return round.map(function(pair, gi) {
     return { a: pair[0], b: pair[1], board: slot === 0 ? (gi < 8 ? 'Board ' + boards[gi] : 'Board TBD') : 'Players choose board' };
   });
@@ -642,7 +645,7 @@ var DEFAULT_CALENDAR_NOTES = [
   {date:'2026-07-02',status:'Off',note:'4th of July break'}
 ];
 var DEFAULT_RAINOUTS = [{week:3,date:'2026-06-11'}];
-var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice() };
+var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice(), scheduleWeekMap:{}, week3MakeupRotationApplied:false };
 var curWeek = null, curSlot = 0, seasonFilter = null, baggerCnt = 1, baggerWeek = null;
 
 // Admin mode is enabled only after Firebase Authentication verifies the approved user.
@@ -1321,7 +1324,9 @@ function applyLeagueSettings(settings) {
     weekDates: Object.assign({},settings.weekDates || leagueSettings.weekDates || DEFAULT_WEEK_DATES),
     actualWeekDates: Object.assign({},settings.actualWeekDates || leagueSettings.actualWeekDates || {}),
     calendarNotes: (settings.calendarNotes || leagueSettings.calendarNotes || DEFAULT_CALENDAR_NOTES).slice(),
-    rainouts: (settings.rainouts || leagueSettings.rainouts || DEFAULT_RAINOUTS).slice()
+    rainouts: (settings.rainouts || leagueSettings.rainouts || DEFAULT_RAINOUTS).slice(),
+    scheduleWeekMap: Object.assign({},settings.scheduleWeekMap || {}),
+    week3MakeupRotationApplied: !!settings.week3MakeupRotationApplied
   };
   enforceSeasonDeadline();
   WEEKS = leagueSettings.weeks;
@@ -1332,6 +1337,31 @@ function applyLeagueSettings(settings) {
   updateLeagueHeader();
   fillAdminSeasonForm();
   updateWeekStartControl();
+}
+function applyWeek3MakeupRotation(){
+  if (leagueSettings.week3MakeupRotationApplied) return false;
+  var oldResults3 = results[3] || {}, oldResults4 = results[4] || {}, oldResults5 = results[5] || {};
+  results[3] = oldResults5;
+  results[4] = oldResults3;
+  results[5] = oldResults4;
+  var oldBaggers3 = baggers[3] || [], oldBaggers4 = baggers[4] || [], oldBaggers5 = baggers[5] || [];
+  baggers[3] = oldBaggers5;
+  baggers[4] = oldBaggers3;
+  baggers[5] = oldBaggers4;
+  leagueSettings.scheduleWeekMap = Object.assign({},leagueSettings.scheduleWeekMap || {},{3:5,4:3,5:4});
+  leagueSettings.actualWeekDates = leagueSettings.actualWeekDates || {};
+  delete leagueSettings.actualWeekDates[3];
+  leagueSettings.actualWeekDates[4] = '2026-06-18';
+  delete leagueSettings.actualWeekDates[5];
+  var makeupDate = '';
+  (leagueSettings.rainouts || []).forEach(function(item){ if (Number(item.week) === 3 && item.makeupDate) makeupDate = item.makeupDate; });
+  leagueSettings.weekDates[3] = makeupDate;
+  leagueSettings.weekDates[4] = '2026-06-18';
+  leagueSettings.weekDates[5] = '2026-06-25';
+  leagueSettings.week3MakeupRotationApplied = true;
+  rebuildWeekControls();
+  updateWeekStartControl();
+  return true;
 }
 function updateLeagueHeader() {
   var title = document.getElementById('league-title');
@@ -2173,7 +2203,8 @@ async function startCloudSync() {
       const remoteSettings = data.settings || {};
       const needsTenWeekMigration = parseInt(remoteSettings.weeks) === 11
         && (!remoteSettings.playoffsStart || String(remoteSettings.playoffsStart) === '11');
-      pendingWeekMigration = needsTenWeekMigration;
+      const needsMakeupRotation = !remoteSettings.week3MakeupRotationApplied;
+      pendingWeekMigration = needsTenWeekMigration || needsMakeupRotation;
       applyingRemote = true;
       archives = data.archives || {};
       playoffState = data.playoffs || playoffState || { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''} };
@@ -2182,6 +2213,7 @@ async function startCloudSync() {
         results = data.results || {};
         baggers = data.baggers || {};
       }
+      const makeupRotationApplied = !viewingArchive && applyWeek3MakeupRotation();
       populateSeasonViewSelector();
       try {
         localStorage.setItem('bags_test_lab_r', JSON.stringify(results));
@@ -2190,7 +2222,7 @@ async function startCloudSync() {
       renderEverything();
       applyingRemote = false;
       cloudStatus('Cloud sync live', 'ok');
-      if (needsTenWeekMigration && ADMIN_MODE) {
+      if ((needsTenWeekMigration || makeupRotationApplied) && ADMIN_MODE) {
         pendingWeekMigration = false;
         setTimeout(function(){ window.save(); }, 50);
       }
