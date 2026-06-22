@@ -151,7 +151,7 @@ input[type=text]:focus{border-color:#7B2D8B;background:#fff}
 .team-week-date{font-size:8px;margin-top:5px;opacity:.82;text-transform:none;letter-spacing:0;text-align:center;line-height:1.2}.calendar-notices{display:grid;gap:6px;margin-bottom:10px}.calendar-notice{display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:11px;padding:8px 10px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:10px;font-weight:800}.calendar-notice.off{background:#eff6ff;border-color:#93c5fd;color:#1e40af}.calendar-notice strong{font-size:11px}.calendar-notice span{text-align:right}
 .team-week-block{position:relative}.team-week-block.rainout-day{min-height:190px;border-color:#60a5fa;background:#dbeafe}.rainout-day .team-week-label,.rainout-day .team-week-rounds{opacity:.24;filter:grayscale(1)}.rainout-ribbon{position:absolute;z-index:3;left:5%;right:5%;top:50%;transform:translateY(-50%) rotate(-2deg);min-height:48px;display:flex;align-items:center;justify-content:center;gap:7px;padding:5px 10px;border:3px solid #1d4ed8;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:17px;font-weight:1000;letter-spacing:.06em;text-align:center;text-transform:uppercase;box-shadow:0 5px 14px rgba(30,64,175,.25)}.team-week-block.holiday-day{display:flex;min-height:112px;align-items:center;justify-content:center;border-color:#f59e0b;background:linear-gradient(135deg,#172554,#1e3a8a)}.holiday-stamp{padding:13px 18px;border:3px solid #fbbf24;border-radius:14px;background:rgba(255,255,255,.96);color:#b91c1c;font-size:18px;font-weight:1000;text-align:center;letter-spacing:.04em;box-shadow:0 5px 14px rgba(15,23,42,.25)}.holiday-stamp small{display:block;margin-top:3px;color:#1d4ed8;font-size:11px;letter-spacing:.02em}
 .team-page-link{border:0;background:none;padding:0;color:#1F3864;font:inherit;font-weight:700;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#bfdbfe;text-underline-offset:2px}
-.week-start-row{display:none;align-items:center;justify-content:space-between;gap:8px;margin:-3px 0 9px;padding:8px 10px;border-radius:11px;background:#eef6ff;border:1px solid #bfdbfe}.week-date-status{font-size:11px;font-weight:800;color:#1e40af}.week-action-buttons{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.week-start-btn,.week-rainout-btn,.week-undo-rainout-btn,.week-reset-start-btn{border:0;border-radius:9px;padding:8px 10px;color:#fff;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}.week-start-btn{background:#16a34a}.week-rainout-btn{background:#2563eb}.week-undo-rainout-btn{background:#64748b}.week-reset-start-btn{background:#d97706}
+.week-start-row{display:none;align-items:center;justify-content:space-between;gap:8px;margin:-3px 0 9px;padding:8px 10px;border-radius:11px;background:#eef6ff;border:1px solid #bfdbfe}.week-date-status{font-size:11px;font-weight:800;color:#1e40af}.week-action-buttons{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.week-start-btn,.week-rainout-btn,.week-undo-rainout-btn,.week-reset-start-btn,.week-makeup-btn{border:0;border-radius:9px;padding:8px 10px;color:#fff;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}.week-start-btn{background:#16a34a}.week-rainout-btn{background:#2563eb}.week-undo-rainout-btn{background:#64748b}.week-reset-start-btn{background:#d97706}.makeup-date-control{display:none;align-items:center;gap:5px;padding:4px;border:1px solid #93c5fd;border-radius:9px;background:#fff}.makeup-date-control input{width:124px;border:0;padding:4px;color:#1e3a8a;font-size:11px;font-weight:800;outline:none}.week-makeup-btn{background:#7c3aed}
 .team-collapse{background:#fff;border:1px solid #dbe3ef;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 10px rgba(15,23,42,.07)}.team-collapse summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#183153,#2563eb);color:#fff;cursor:pointer;list-style:none;font-size:13px;font-weight:900}.team-collapse summary::-webkit-details-marker{display:none}.team-collapse summary small{font-size:10px;font-weight:700;opacity:.75;margin-left:auto}.team-collapse-arrow{font-size:17px;transition:transform .18s}.team-collapse[open] .team-collapse-arrow{transform:rotate(180deg)}.team-collapse-content{padding:10px}
 
 /* Cloud sync status */
@@ -456,7 +456,7 @@ Tim/Rick"></textarea>
   <!-- SCORE TAB -->
   <div id="tab-score" class="tab active">
     <select id="week-sel"><option value="">Select week...</option></select>
-    <div class="week-start-row" id="week-start-row"><span class="week-date-status" id="week-date-status"></span><div class="week-action-buttons"><button type="button" class="week-reset-start-btn" id="week-reset-start-btn">↩ Reset Start Date</button><button type="button" class="week-undo-rainout-btn" id="week-undo-rainout-btn">↩ Undo Rainout</button><button type="button" class="week-rainout-btn" id="week-rainout-btn">🌧 Rain Out</button><button type="button" class="week-start-btn" id="week-start-btn">Start Week Today</button></div></div>
+    <div class="week-start-row" id="week-start-row"><span class="week-date-status" id="week-date-status"></span><div class="week-action-buttons"><div class="makeup-date-control" id="makeup-date-control"><input type="date" id="week-makeup-date" aria-label="Makeup date"><button type="button" class="week-makeup-btn" id="week-makeup-btn">Set Makeup Date</button></div><button type="button" class="week-reset-start-btn" id="week-reset-start-btn">↩ Reset Start Date</button><button type="button" class="week-undo-rainout-btn" id="week-undo-rainout-btn">↩ Undo Rainout</button><button type="button" class="week-rainout-btn" id="week-rainout-btn">🌧 Rain Out</button><button type="button" class="week-start-btn" id="week-start-btn">Start Week Today</button></div></div>
     <select id="slot-sel" style="display:none">
       <option value="0">Round 1</option>
       <option value="1">Round 2</option>
@@ -635,7 +635,8 @@ var results = {}, baggers = {};
 var archives = {};
 var viewingArchive = '';
 var playoffState = { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''}, bracketLayout:null };
-var DEFAULT_WEEK_DATES = {1:'2026-05-28',2:'2026-06-04',3:'2026-06-18',4:'2026-06-25',5:'2026-07-09',6:'2026-07-16',7:'2026-07-23',8:'2026-07-30',9:'2026-08-06',10:'2026-08-13'};
+var REGULAR_SEASON_END = '2026-08-06';
+var DEFAULT_WEEK_DATES = {1:'2026-05-28',2:'2026-06-04',3:'2026-06-18',4:'2026-06-25',5:'2026-07-09',6:'2026-07-16',7:'2026-07-23',8:'2026-07-30',9:'2026-08-06',10:''};
 var DEFAULT_CALENDAR_NOTES = [
   {date:'2026-06-11',status:'Rainout',note:'Makeup date TBD'},
   {date:'2026-07-02',status:'Off',note:'4th of July break'}
@@ -902,6 +903,7 @@ document.getElementById('week-start-btn').addEventListener('click',startWeekToda
 document.getElementById('week-rainout-btn').addEventListener('click',function(){ if (curWeek) rainOutWeek(curWeek); });
 document.getElementById('week-undo-rainout-btn').addEventListener('click',function(){ if (curWeek) undoRainOutWeek(curWeek); });
 document.getElementById('week-reset-start-btn').addEventListener('click',function(){ if (curWeek) resetWeekStartDate(curWeek); });
+document.getElementById('week-makeup-btn').addEventListener('click',function(){ if (curWeek) setMakeupDate(curWeek); });
 
 document.getElementById('slot-sel').addEventListener('change', function() {
   renderMatchups();
@@ -1321,6 +1323,7 @@ function applyLeagueSettings(settings) {
     calendarNotes: (settings.calendarNotes || leagueSettings.calendarNotes || DEFAULT_CALENDAR_NOTES).slice(),
     rainouts: (settings.rainouts || leagueSettings.rainouts || DEFAULT_RAINOUTS).slice()
   };
+  enforceSeasonDeadline();
   WEEKS = leagueSettings.weeks;
   TEAMS = leagueSettings.teams.slice();
   RR = buildRR(TEAMS);
@@ -1355,6 +1358,12 @@ function getWeekDate(week){
   return (leagueSettings.actualWeekDates && leagueSettings.actualWeekDates[week]) || (leagueSettings.weekDates && leagueSettings.weekDates[week]) || '';
 }
 function isActualWeekDate(week){ return !!(leagueSettings.actualWeekDates && leagueSettings.actualWeekDates[week]); }
+function enforceSeasonDeadline(){
+  if (!leagueSettings || !leagueSettings.weekDates) return;
+  Object.keys(leagueSettings.weekDates).forEach(function(week){
+    if (leagueSettings.weekDates[week] && leagueSettings.weekDates[week] > REGULAR_SEASON_END) leagueSettings.weekDates[week] = '';
+  });
+}
 function addDaysISO(dateValue,days){
   var date = new Date(dateValue + 'T12:00:00');
   date.setDate(date.getDate() + days);
@@ -1379,7 +1388,7 @@ function rainOutWeek(week){
   for (var w=week; w<=WEEKS; w++) {
     if (isActualWeekDate(w)) continue;
     while (blocked[nextDate]) nextDate = addDaysISO(nextDate,7);
-    leagueSettings.weekDates[w] = nextDate;
+    leagueSettings.weekDates[w] = nextDate <= REGULAR_SEASON_END ? nextDate : '';
     nextDate = addDaysISO(nextDate,7);
   }
   rebuildWeekControls();
@@ -1413,6 +1422,7 @@ function undoRainOutWeek(week){
   leagueSettings.calendarNotes = (leagueSettings.calendarNotes || []).filter(function(item){
     return !(item.date === removed.date && item.status === 'Rainout');
   });
+  enforceSeasonDeadline();
   rebuildWeekControls();
   updateWeekStartControl();
   renderTeamPage();
@@ -1432,22 +1442,57 @@ function resetWeekStartDate(week){
   save();
 }
 window.resetWeekStartDate = resetWeekStartDate;
+function setMakeupDate(week){
+  week = Number(week);
+  if (!ADMIN_MODE || !week) return;
+  var input = document.getElementById('week-makeup-date');
+  var makeupDate = input && input.value;
+  if (!makeupDate) { alert('Choose the makeup date first.'); return; }
+  if (makeupDate > REGULAR_SEASON_END) { alert('The regular season must finish by August 6. Choose a makeup date on or before August 6.'); return; }
+  var blocked = (leagueSettings.calendarNotes || []).some(function(item){ return item.date === makeupDate && (item.status === 'Off' || item.status === 'Rainout'); });
+  if (blocked) { alert('That date is already marked as a holiday or rainout. Please choose another date.'); return; }
+  leagueSettings.weekDates = leagueSettings.weekDates || {};
+  leagueSettings.weekDates[week] = makeupDate;
+  var rainouts = (leagueSettings.rainouts || []).filter(function(item){ return Number(item.week) === week; });
+  if (rainouts.length) rainouts[rainouts.length-1].makeupDate = makeupDate;
+  if (rainouts.length) {
+    var blockedDates = {};
+    (leagueSettings.calendarNotes || []).forEach(function(item){ if (item.status === 'Off' || item.status === 'Rainout') blockedDates[item.date] = true; });
+    var nextThursday = addDaysISO(rainouts[0].date,7);
+    for (var laterWeek=week+1; laterWeek<=WEEKS; laterWeek++) {
+      if (isActualWeekDate(laterWeek)) { nextThursday = addDaysISO(nextThursday,7); continue; }
+      while (blockedDates[nextThursday]) nextThursday = addDaysISO(nextThursday,7);
+      leagueSettings.weekDates[laterWeek] = nextThursday <= REGULAR_SEASON_END ? nextThursday : '';
+      nextThursday = addDaysISO(nextThursday,7);
+    }
+  }
+  enforceSeasonDeadline();
+  rebuildWeekControls();
+  updateWeekStartControl();
+  renderTeamPage();
+  save();
+  alert('Week ' + week + ' makeup date set for ' + formatLeagueDate(makeupDate,false) + '.');
+}
+window.setMakeupDate = setMakeupDate;
 function ensureWeekStarted(week){
   if (!week) return;
   leagueSettings.actualWeekDates = leagueSettings.actualWeekDates || {};
   if (!leagueSettings.actualWeekDates[week]) leagueSettings.actualWeekDates[week] = localISODate();
 }
 function updateWeekStartControl(){
-  var row = document.getElementById('week-start-row'), status = document.getElementById('week-date-status'), button = document.getElementById('week-start-btn'), rainButton = document.getElementById('week-rainout-btn'), undoButton = document.getElementById('week-undo-rainout-btn'), resetButton = document.getElementById('week-reset-start-btn');
-  if (!row || !status || !button || !rainButton || !undoButton || !resetButton) return;
+  var row = document.getElementById('week-start-row'), status = document.getElementById('week-date-status'), button = document.getElementById('week-start-btn'), rainButton = document.getElementById('week-rainout-btn'), undoButton = document.getElementById('week-undo-rainout-btn'), resetButton = document.getElementById('week-reset-start-btn'), makeupControl = document.getElementById('makeup-date-control'), makeupInput = document.getElementById('week-makeup-date');
+  if (!row || !status || !button || !rainButton || !undoButton || !resetButton || !makeupControl || !makeupInput) return;
   if (!curWeek) { row.style.display='none'; return; }
   row.style.display='flex';
   var date = getWeekDate(curWeek);
+  var hasRainout = (leagueSettings.rainouts || []).some(function(item){ return Number(item.week) === Number(curWeek); });
   status.textContent = (isActualWeekDate(curWeek) ? 'Played: ' : 'Scheduled: ') + (date ? formatLeagueDate(date,false) : 'Date TBD');
   button.style.display = ADMIN_MODE && !isActualWeekDate(curWeek) ? 'block' : 'none';
   rainButton.style.display = ADMIN_MODE && !isActualWeekDate(curWeek) ? 'block' : 'none';
-  undoButton.style.display = ADMIN_MODE && !isActualWeekDate(curWeek) && (leagueSettings.rainouts || []).some(function(item){ return Number(item.week) === Number(curWeek); }) ? 'block' : 'none';
+  undoButton.style.display = ADMIN_MODE && !isActualWeekDate(curWeek) && hasRainout ? 'block' : 'none';
   resetButton.style.display = ADMIN_MODE && isActualWeekDate(curWeek) ? 'block' : 'none';
+  makeupControl.style.display = ADMIN_MODE && !isActualWeekDate(curWeek) && hasRainout ? 'flex' : 'none';
+  makeupInput.value = !isActualWeekDate(curWeek) && date ? date : '';
 }
 function startWeekToday(){
   if (!ADMIN_MODE || !curWeek) return;
@@ -1471,7 +1516,7 @@ function rebuildWeekControls() {
     (leagueSettings.rainouts || []).filter(function(item){ return Number(item.week) === w; }).forEach(function(item){
       scoreCalendar.push({date:item.date,order:0,label:'🌧 ' + formatLeagueDate(item.date,true) + ' — Week ' + w + ' RAINED OUT',disabled:true});
     });
-    scoreCalendar.push({date:getWeekDate(w),order:1,label:'Week ' + w + (hadRainout ? ' (Rescheduled)' : '') + (dateLabel ? ' — ' + dateLabel : ''),value:w});
+    scoreCalendar.push({date:getWeekDate(w),order:1,label:'Week ' + w + (hadRainout ? ' (Makeup)' : '') + (dateLabel ? ' — ' + dateLabel : ''),value:w});
     if (bwsel) { var o2 = document.createElement('option'); o2.value = w; o2.textContent = 'Week ' + w + (dateLabel ? ' — ' + dateLabel : ''); bwsel.appendChild(o2); }
     if (wfilt) { var btn = document.createElement('button'); btn.className = 'wfbtn'; btn.textContent = 'Wk ' + w; btn.setAttribute('data-filter', w); wfilt.appendChild(btn); }
   }
