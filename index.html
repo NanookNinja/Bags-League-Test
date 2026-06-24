@@ -502,7 +502,7 @@ Tim/Rick"></textarea>
 
   <!-- TEAMS TAB -->
   <div id="tab-teams" class="tab">
-    <select id="team-page-select"><option value="">Select a team...</option></select>
+    <select id="team-page-select"><option value="">Select your team</option></select>
     <div id="team-page-content"></div>
   </div>
 
@@ -983,11 +983,11 @@ function renderSeasonStandings() {
 function populateTeamPageSelect(){
   var select = document.getElementById('team-page-select'); if (!select) return;
   var current = select.value;
-  select.innerHTML = '<option value="">Select a team...</option>';
+  select.innerHTML = '<option value="">Select your team</option>';
   TEAMS.forEach(function(team){
     var option = document.createElement('option'); option.value = team; option.textContent = team; select.appendChild(option);
   });
-  select.value = TEAMS.indexOf(current) >= 0 ? current : (TEAMS[0] || '');
+  select.value = TEAMS.indexOf(current) >= 0 ? current : '';
 }
 function getTeamSchedule(team){
   var schedule = [], opponents = {};
@@ -1017,7 +1017,7 @@ function renderTeamPage(){
   var select = document.getElementById('team-page-select'), content = document.getElementById('team-page-content');
   if (!select || !content) return;
   if (select.options.length <= 1) populateTeamPageSelect();
-  var team = select.value || TEAMS[0];
+  var team = select.value;
   if (!team) { content.innerHTML = ''; return; }
   select.value = team;
   var totals = calcSeasonTotals(null)[team] || {wins:0,losses:0,played:0};
