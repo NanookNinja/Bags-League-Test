@@ -220,6 +220,7 @@ th{padding:7px 9px;font-size:10px}td{padding:7px 9px;font-size:12px}.pill{border
 .wk-filter{gap:5px;margin-bottom:8px}.wfbtn{padding:6px 10px;border-radius:999px;box-shadow:none;border:1px solid var(--line)}.wfbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .share-btn,.add-btn,.import-btn,.admin-action-btn{border-radius:12px;padding:11px 12px;font-size:14px;box-shadow:0 2px 8px rgba(15,23,42,.10)}
 .admin-panel{padding:12px;margin-bottom:10px;background:linear-gradient(180deg,#fff,#f8fbff)}.admin-panel h3{font-size:15px;margin-bottom:4px}.admin-panel h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:12px 0 7px}.admin-note{font-size:11px;color:var(--muted);margin-bottom:8px}.admin-grid{display:grid;grid-template-columns:1fr 96px;gap:8px}.admin-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.admin-action-btn{width:100%;border:none;margin-bottom:7px;background:#e8f0fe;color:#1f3864;font-weight:800;cursor:pointer}.admin-action-btn.green{background:#dcfce7;color:#166534}.admin-action-btn.orange{background:#ffedd5;color:#9a3412}.admin-action-btn.red{background:#fee2e2;color:#991b1b}.import-btn{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+.holiday-admin-grid{display:grid;grid-template-columns:130px 1fr;gap:7px}.holiday-admin-grid input{width:100%;border:1.5px solid #dbe3ef;border-radius:10px;padding:10px;margin-bottom:7px;font-size:13px}.holiday-admin-list{display:grid;gap:6px;margin-bottom:8px}.holiday-admin-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid #fbbf24;border-radius:10px;background:#fffbeb;color:#92400e;font-size:11px;font-weight:800}.holiday-remove-btn{border:0;border-radius:8px;padding:6px 8px;background:#fee2e2;color:#991b1b;font-size:10px;font-weight:900;cursor:pointer}
 .league-name-box{background:#eef6ff;border:1px solid #bfdbfe;border-radius:14px;padding:10px;margin:10px 0}.league-name-box label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#1e40af;margin-bottom:6px}.mini-btn{width:100%;border:none;border-radius:11px;background:#1f3864;color:#fff;font-weight:800;padding:10px 12px;margin-bottom:8px;cursor:pointer}
 @media(max-width:420px){.app{padding:8px}.hdr{padding:14px 12px}.hdr h1{font-size:18px}.admin-grid,.admin-row{grid-template-columns:1fr}.nav{gap:3px}.nvbtn{font-size:10px;padding:9px 2px}.team-side .tname{font-size:10.5px}.wbtn{font-size:9px}}
 
@@ -411,6 +412,11 @@ Tim/Rick"></textarea>
       <button class="admin-action-btn orange" id="archive-season-btn">Archive Season</button>
       <button class="admin-action-btn red" id="new-season-btn">New Blank Season</button>
     </div>
+
+    <h4>Holidays / Days Off</h4>
+    <div class="holiday-admin-grid"><input id="holiday-date" type="date"><input id="holiday-name" type="text" placeholder="Holiday name, e.g. Labor Day"></div>
+    <button class="admin-action-btn orange" id="add-holiday-btn">🎆 Add Holiday / Day Off</button>
+    <div class="holiday-admin-list" id="holiday-admin-list"></div>
 
 
 
@@ -646,7 +652,7 @@ var DEFAULT_CALENDAR_NOTES = [
   {date:'2026-07-02',status:'Off',note:'4th of July break'}
 ];
 var DEFAULT_RAINOUTS = [{week:3,date:'2026-06-11'}];
-var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice(), scheduleWeekMap:{}, week3MakeupRotationApplied:false };
+var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice(), scheduleWeekMap:{}, week3MakeupRotationApplied:false, regularSeasonEnd:REGULAR_SEASON_END };
 var curWeek = null, curSlot = 0, seasonFilter = null, baggerCnt = 1, baggerWeek = null;
 
 // Admin mode is enabled only after Firebase Authentication verifies the approved user.
@@ -1039,7 +1045,7 @@ function renderTeamPage(){
     if (!weekGames.length) continue;
     offDays.forEach(function(day){
       if (!shownOffDays[day.date] && day.date < weekGames[0].date) {
-        html += '<div class="team-week-block holiday-day"><div class="holiday-stamp">🎆 JULY 4TH HOLIDAY 🎇<small>' + formatLeagueDate(day.date,false) + ' · No league games</small></div></div>';
+        html += '<div class="team-week-block holiday-day"><div class="holiday-stamp">🎆 ' + (day.note || 'HOLIDAY / DAY OFF').toUpperCase() + ' 🎇<small>' + formatLeagueDate(day.date,false) + ' · No league games</small></div></div>';
         shownOffDays[day.date] = true;
       }
     });
@@ -1059,7 +1065,7 @@ function renderTeamPage(){
     }).join('');
     html += '</div></div>';
   }
-  offDays.forEach(function(day){ if (!shownOffDays[day.date]) html += '<div class="team-week-block holiday-day"><div class="holiday-stamp">🎆 JULY 4TH HOLIDAY 🎇<small>' + formatLeagueDate(day.date,false) + ' · No league games</small></div></div>'; });
+  offDays.forEach(function(day){ if (!shownOffDays[day.date]) html += '<div class="team-week-block holiday-day"><div class="holiday-stamp">🎆 ' + (day.note || 'HOLIDAY / DAY OFF').toUpperCase() + ' 🎇<small>' + formatLeagueDate(day.date,false) + ' · No league games</small></div></div>'; });
   html += '</div></details>';
   html += '<details class="team-collapse"><summary><span>Opponent History</span><small>Meetings and game record</small><b class="team-collapse-arrow">⌄</b></summary><div class="team-collapse-content opponent-history">';
   html += opponentNames.map(function(opponent){
@@ -1327,7 +1333,8 @@ function applyLeagueSettings(settings) {
     calendarNotes: (settings.calendarNotes || leagueSettings.calendarNotes || DEFAULT_CALENDAR_NOTES).slice(),
     rainouts: (settings.rainouts || leagueSettings.rainouts || DEFAULT_RAINOUTS).slice(),
     scheduleWeekMap: Object.assign({},settings.scheduleWeekMap || {}),
-    week3MakeupRotationApplied: !!settings.week3MakeupRotationApplied
+    week3MakeupRotationApplied: !!settings.week3MakeupRotationApplied,
+    regularSeasonEnd: Object.prototype.hasOwnProperty.call(settings,'regularSeasonEnd') ? settings.regularSeasonEnd : leagueSettings.regularSeasonEnd
   };
   enforceSeasonDeadline();
   WEEKS = leagueSettings.weeks;
@@ -1391,8 +1398,10 @@ function getWeekDate(week){
 function isActualWeekDate(week){ return !!(leagueSettings.actualWeekDates && leagueSettings.actualWeekDates[week]); }
 function enforceSeasonDeadline(){
   if (!leagueSettings || !leagueSettings.weekDates) return;
+  var deadline = leagueSettings.regularSeasonEnd;
+  if (!deadline) return;
   Object.keys(leagueSettings.weekDates).forEach(function(week){
-    if (leagueSettings.weekDates[week] && leagueSettings.weekDates[week] > REGULAR_SEASON_END) leagueSettings.weekDates[week] = '';
+    if (leagueSettings.weekDates[week] && leagueSettings.weekDates[week] > deadline) leagueSettings.weekDates[week] = '';
   });
 }
 function addDaysISO(dateValue,days){
@@ -1419,7 +1428,7 @@ function rainOutWeek(week){
   for (var w=week; w<=WEEKS; w++) {
     if (isActualWeekDate(w)) continue;
     while (blocked[nextDate]) nextDate = addDaysISO(nextDate,7);
-    leagueSettings.weekDates[w] = nextDate <= REGULAR_SEASON_END ? nextDate : '';
+    leagueSettings.weekDates[w] = !leagueSettings.regularSeasonEnd || nextDate <= leagueSettings.regularSeasonEnd ? nextDate : '';
     nextDate = addDaysISO(nextDate,7);
   }
   rebuildWeekControls();
@@ -1479,7 +1488,7 @@ function setMakeupDate(week){
   var input = document.getElementById('week-makeup-date');
   var makeupDate = input && input.value;
   if (!makeupDate) { alert('Choose the makeup date first.'); return; }
-  if (makeupDate > REGULAR_SEASON_END) { alert('The regular season must finish by August 6. Choose a makeup date on or before August 6.'); return; }
+  if (leagueSettings.regularSeasonEnd && makeupDate > leagueSettings.regularSeasonEnd) { alert('Choose a makeup date on or before ' + formatLeagueDate(leagueSettings.regularSeasonEnd,false) + '.'); return; }
   var blocked = (leagueSettings.calendarNotes || []).some(function(item){ return item.date === makeupDate && (item.status === 'Off' || item.status === 'Rainout'); });
   if (blocked) { alert('That date is already marked as a holiday or rainout. Please choose another date.'); return; }
   leagueSettings.weekDates = leagueSettings.weekDates || {};
@@ -1493,7 +1502,7 @@ function setMakeupDate(week){
     for (var laterWeek=week+1; laterWeek<=WEEKS; laterWeek++) {
       if (isActualWeekDate(laterWeek)) { nextThursday = addDaysISO(nextThursday,7); continue; }
       while (blockedDates[nextThursday]) nextThursday = addDaysISO(nextThursday,7);
-      leagueSettings.weekDates[laterWeek] = nextThursday <= REGULAR_SEASON_END ? nextThursday : '';
+      leagueSettings.weekDates[laterWeek] = !leagueSettings.regularSeasonEnd || nextThursday <= leagueSettings.regularSeasonEnd ? nextThursday : '';
       nextThursday = addDaysISO(nextThursday,7);
     }
   }
@@ -1552,7 +1561,7 @@ function rebuildWeekControls() {
     if (wfilt) { var btn = document.createElement('button'); btn.className = 'wfbtn'; btn.textContent = 'Wk ' + w; btn.setAttribute('data-filter', w); wfilt.appendChild(btn); }
   }
   (leagueSettings.calendarNotes || []).filter(function(item){ return item.status === 'Off'; }).forEach(function(item){
-    scoreCalendar.push({date:item.date,order:0,label:'🎆 ' + formatLeagueDate(item.date,true) + ' — JULY 4TH HOLIDAY',disabled:true});
+    scoreCalendar.push({date:item.date,order:0,label:'🎆 ' + formatLeagueDate(item.date,true) + ' — ' + (item.note || 'HOLIDAY / DAY OFF').toUpperCase(),disabled:true});
   });
   scoreCalendar.sort(function(a,b){ return (a.date || '9999').localeCompare(b.date || '9999') || a.order-b.order; });
   if (wsel) scoreCalendar.forEach(function(item){
@@ -1565,6 +1574,57 @@ function rebuildWeekControls() {
   if (curWeek && curWeek <= WEEKS && wsel) wsel.value = curWeek;
   if (baggerWeek && baggerWeek <= WEEKS && bwsel) bwsel.value = baggerWeek;
 }
+function renderHolidayAdmin(){
+  var list = document.getElementById('holiday-admin-list');
+  if (!list) return;
+  list.innerHTML = '';
+  var holidays = (leagueSettings.calendarNotes || []).filter(function(item){ return item.status === 'Off'; }).sort(function(a,b){ return a.date.localeCompare(b.date); });
+  holidays.forEach(function(item){
+    var row = document.createElement('div'); row.className = 'holiday-admin-item';
+    var label = document.createElement('span'); label.textContent = '🎆 ' + formatLeagueDate(item.date,false) + ' · ' + (item.note || 'Holiday / Day Off');
+    var button = document.createElement('button'); button.type = 'button'; button.className = 'holiday-remove-btn'; button.textContent = 'Remove'; button.setAttribute('data-holiday-date',item.date);
+    row.appendChild(label); row.appendChild(button); list.appendChild(row);
+  });
+  if (!holidays.length) list.innerHTML = '<div class="admin-note">No holidays or days off added for this season.</div>';
+}
+function addHolidayDayOff(){
+  if (!ADMIN_MODE) return;
+  var dateInput = document.getElementById('holiday-date'), nameInput = document.getElementById('holiday-name');
+  var date = dateInput && dateInput.value, name = nameInput && nameInput.value.trim();
+  if (!date || !name) { alert('Choose a date and enter the holiday or day-off name.'); return; }
+  leagueSettings.calendarNotes = leagueSettings.calendarNotes || [];
+  var existing = leagueSettings.calendarNotes.find(function(item){ return item.status === 'Off' && item.date === date; });
+  if (existing) { existing.note = name; }
+  else {
+    leagueSettings.calendarNotes.push({date:date,status:'Off',note:name,previousWeekDates:Object.assign({},leagueSettings.weekDates || {})});
+    var affectedWeek = 0;
+    for (var w=1; w<=WEEKS; w++) { if (!isActualWeekDate(w) && leagueSettings.weekDates[w] === date) { affectedWeek = w; break; } }
+    if (affectedWeek) {
+      var blocked = {};
+      leagueSettings.calendarNotes.forEach(function(item){ if (item.status === 'Off' || item.status === 'Rainout') blocked[item.date] = true; });
+      var nextDate = addDaysISO(date,7);
+      for (var later=affectedWeek; later<=WEEKS; later++) {
+        if (isActualWeekDate(later)) continue;
+        while (blocked[nextDate]) nextDate = addDaysISO(nextDate,7);
+        leagueSettings.weekDates[later] = !leagueSettings.regularSeasonEnd || nextDate <= leagueSettings.regularSeasonEnd ? nextDate : '';
+        nextDate = addDaysISO(nextDate,7);
+      }
+    }
+  }
+  if (dateInput) dateInput.value = '';
+  if (nameInput) nameInput.value = '';
+  rebuildWeekControls(); renderTeamPage(); renderHolidayAdmin(); save();
+}
+function removeHolidayDayOff(date){
+  if (!ADMIN_MODE) return;
+  var notes = leagueSettings.calendarNotes || [], index = notes.findIndex(function(item){ return item.status === 'Off' && item.date === date; });
+  if (index < 0) return;
+  var holiday = notes[index];
+  if (!confirm('Remove ' + (holiday.note || 'this holiday') + ' on ' + formatLeagueDate(date,false) + '?')) return;
+  if (holiday.previousWeekDates) leagueSettings.weekDates = Object.assign({},holiday.previousWeekDates);
+  notes.splice(index,1);
+  rebuildWeekControls(); renderTeamPage(); renderHolidayAdmin(); save();
+}
 function fillAdminSeasonForm() {
   var ln = document.getElementById('admin-league-name');
   var n = document.getElementById('admin-season-name');
@@ -1576,6 +1636,7 @@ function fillAdminSeasonForm() {
   if (w) w.value = leagueSettings.weeks || WEEKS;
   if (p) p.value = leagueSettings.playoffsStart || '';
   if (t) t.value = (leagueSettings.teams || TEAMS).join('\n');
+  renderHolidayAdmin();
   try { fillPlayoffAdminForm(); } catch(e) {}
 }
 function populateSeasonViewSelector() {
@@ -1614,8 +1675,18 @@ function renderEverythingSafe() {
 }
   
 function resetForNewSeason(settings) {
-  applyLeagueSettings(settings);
-  leagueSettings.actualWeekDates = {};
+  var blankWeekDates = {};
+  var newWeekCount = parseInt(settings.weeks || 10);
+  for (var weekNumber=1; weekNumber<=newWeekCount; weekNumber++) blankWeekDates[weekNumber] = '';
+  applyLeagueSettings(Object.assign({},settings,{
+    weekDates: blankWeekDates,
+    actualWeekDates: {},
+    calendarNotes: [],
+    rainouts: [],
+    scheduleWeekMap: {},
+    week3MakeupRotationApplied: true,
+    regularSeasonEnd: ''
+  }));
   results = {};
   baggers = {};
   playoffState = { locked:false, generated:false, topTitle:'Tier 1 Championship', bottomTitle:'Tier 2 Championship', top:null, bottom:null, final:{teamA:'',teamB:'',winner:''}, bracketLayout:(playoffState && playoffState.bracketLayout) || null };
@@ -2314,6 +2385,13 @@ startCloudSync();
   function requireAdmin(){ if (!ADMIN_MODE) { alert('This is only available from your admin link.'); return false; } if (viewingArchive) { alert('Switch back to the current season before editing.'); return false; } return true; }
   var seasonSel = document.getElementById('season-view-sel');
   if (seasonSel) seasonSel.addEventListener('change', function(){ viewSeason(this.value); });
+  var addHolidayBtn = document.getElementById('add-holiday-btn');
+  if (addHolidayBtn) addHolidayBtn.addEventListener('click',addHolidayDayOff);
+  var holidayList = document.getElementById('holiday-admin-list');
+  if (holidayList) holidayList.addEventListener('click',function(event){
+    var button = event.target.closest('.holiday-remove-btn');
+    if (button) removeHolidayDayOff(button.getAttribute('data-holiday-date'));
+  });
 
   var saveBtn = document.getElementById('save-season-settings-btn');
   if (saveBtn) saveBtn.addEventListener('click', function(){
