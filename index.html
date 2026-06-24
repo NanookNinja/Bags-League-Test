@@ -153,6 +153,8 @@ input[type=text]:focus{border-color:#7B2D8B;background:#fff}
 .team-week-block{position:relative}.team-week-block.rainout-day{min-height:190px;border-color:#60a5fa;background:#dbeafe}.rainout-day .team-week-label,.rainout-day .team-week-rounds{opacity:.24;filter:grayscale(1)}.rainout-ribbon{position:absolute;z-index:3;left:5%;right:5%;top:50%;transform:translateY(-50%) rotate(-2deg);min-height:48px;display:flex;align-items:center;justify-content:center;gap:7px;padding:5px 10px;border:3px solid #1d4ed8;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:17px;font-weight:1000;letter-spacing:.06em;text-align:center;text-transform:uppercase;box-shadow:0 5px 14px rgba(30,64,175,.25)}.team-week-block.holiday-day{display:flex;min-height:112px;align-items:center;justify-content:center;border-color:#f59e0b;background:linear-gradient(135deg,#172554,#1e3a8a)}.holiday-stamp{padding:13px 18px;border:3px solid #fbbf24;border-radius:14px;background:rgba(255,255,255,.96);color:#b91c1c;font-size:18px;font-weight:1000;text-align:center;letter-spacing:.04em;box-shadow:0 5px 14px rgba(15,23,42,.25)}.holiday-stamp small{display:block;margin-top:3px;color:#1d4ed8;font-size:11px;letter-spacing:.02em}
 .team-page-link{border:0;background:none;padding:0;color:#1F3864;font:inherit;font-weight:700;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:#bfdbfe;text-underline-offset:2px}
 .week-start-row{display:none;align-items:center;justify-content:space-between;gap:8px;margin:-3px 0 9px;padding:8px 10px;border-radius:11px;background:#eef6ff;border:1px solid #bfdbfe}.week-date-status{font-size:11px;font-weight:800;color:#1e40af}.week-action-buttons{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.week-start-btn,.week-rainout-btn,.week-undo-rainout-btn,.week-reset-start-btn,.week-makeup-btn{border:0;border-radius:9px;padding:8px 10px;color:#fff;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}.week-start-btn{background:#16a34a}.week-rainout-btn{background:#2563eb}.week-undo-rainout-btn{background:#64748b}.week-reset-start-btn{background:#d97706}.makeup-date-control{display:none;align-items:center;gap:5px;padding:4px;border:1px solid #93c5fd;border-radius:9px;background:#fff}.makeup-date-control input{width:124px;border:0;padding:4px;color:#1e3a8a;font-size:11px;font-weight:800;outline:none}.week-makeup-btn{background:#7c3aed}
+.forfeit-control{display:none;grid-template-columns:1fr auto auto;gap:6px;align-items:center;margin:-3px 0 9px;padding:8px;border:1px solid #fca5a5;border-radius:11px;background:#fff1f2}.forfeit-control select{margin:0}.forfeit-btn,.forfeit-undo-btn{border:0;border-radius:9px;padding:9px 10px;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}.forfeit-btn{background:#dc2626;color:#fff}.forfeit-undo-btn{background:#e2e8f0;color:#475569}.team-result.forfeit{font-size:9px;letter-spacing:.03em}
+.forfeit-note{padding:7px 10px;background:#fee2e2;color:#991b1b;font-size:10px;font-weight:900;text-align:center;text-transform:uppercase;letter-spacing:.03em}
 .team-collapse{background:#fff;border:1px solid #dbe3ef;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 10px rgba(15,23,42,.07)}.team-collapse summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(135deg,#183153,#2563eb);color:#fff;cursor:pointer;list-style:none;font-size:13px;font-weight:900}.team-collapse summary::-webkit-details-marker{display:none}.team-collapse summary small{font-size:10px;font-weight:700;opacity:.75;margin-left:auto}.team-collapse-arrow{font-size:17px;transition:transform .18s}.team-collapse[open] .team-collapse-arrow{transform:rotate(180deg)}.team-collapse-content{padding:10px}
 
 /* Cloud sync status */
@@ -464,6 +466,7 @@ Tim/Rick"></textarea>
   <div id="tab-score" class="tab active">
     <select id="week-sel"><option value="">Select week...</option></select>
     <div class="week-start-row" id="week-start-row"><span class="week-date-status" id="week-date-status"></span><div class="week-action-buttons"><div class="makeup-date-control" id="makeup-date-control"><input type="date" id="week-makeup-date" aria-label="Makeup date"><button type="button" class="week-makeup-btn" id="week-makeup-btn">Set Makeup Date</button></div><button type="button" class="week-reset-start-btn" id="week-reset-start-btn">↩ Reset Start Date</button><button type="button" class="week-undo-rainout-btn" id="week-undo-rainout-btn">↩ Undo Rainout</button><button type="button" class="week-rainout-btn" id="week-rainout-btn">🌧 Rain Out</button><button type="button" class="week-start-btn" id="week-start-btn">Start Week Today</button></div></div>
+    <div class="forfeit-control" id="forfeit-control"><select id="forfeit-team-select"><option value="">Select absent team...</option></select><button type="button" class="forfeit-btn" id="forfeit-team-btn">Mark Forfeit</button><button type="button" class="forfeit-undo-btn" id="forfeit-undo-btn">Undo</button></div>
     <select id="slot-sel" style="display:none">
       <option value="0">Round 1</option>
       <option value="1">Round 2</option>
@@ -652,7 +655,7 @@ var DEFAULT_CALENDAR_NOTES = [
   {date:'2026-07-02',status:'Off',note:'4th of July break'}
 ];
 var DEFAULT_RAINOUTS = [{week:3,date:'2026-06-11'}];
-var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice(), scheduleWeekMap:{}, week3MakeupRotationApplied:false, regularSeasonEnd:REGULAR_SEASON_END };
+var leagueSettings = { leagueName: 'Bags League Test Lab', seasonName: 'Test Season', weeks: 10, playoffsStart: '11', teams: TEAMS.slice(), weekDates:Object.assign({},DEFAULT_WEEK_DATES), actualWeekDates:{}, calendarNotes:DEFAULT_CALENDAR_NOTES.slice(), rainouts:DEFAULT_RAINOUTS.slice(), forfeits:[], scheduleWeekMap:{}, week3MakeupRotationApplied:false, regularSeasonEnd:REGULAR_SEASON_END };
 var curWeek = null, curSlot = 0, seasonFilter = null, baggerCnt = 1, baggerWeek = null;
 
 // Admin mode is enabled only after Firebase Authentication verifies the approved user.
@@ -715,6 +718,7 @@ window.setAdminMode = function(enabled, email){
   if (scoreLockControl) scoreLockControl.classList.toggle('show', ADMIN_MODE);
   if (pageSwitch) pageSwitch.classList.toggle('show', ADMIN_MODE);
   try { updateWeekStartControl(); } catch(e) {}
+  try { updateForfeitControl(); } catch(e) {}
   setAdminPage('scoring', false);
   setScoreEditUnlocked(false);
   var sessionEmail = document.getElementById('admin-session-email');
@@ -852,7 +856,10 @@ function renderMatchups() {
     html += makeGB(mi, 'g2', m.g2, mu.a, mu.b, m.g1 === null, false);
     html += makeGB(mi, 'g3', m.g3, mu.a, mu.b, !m.swept && (m.g1 === null || m.g2 === null), m.swept);
     html += '</div>';
-    if (m.swept) {
+    var forfeitingTeam = (leagueSettings.forfeits || []).find(function(item){ return Number(item.week) === Number(curWeek) && (item.team === mu.a || item.team === mu.b); });
+    if (forfeitingTeam) {
+      html += '<div class="forfeit-note">🚫 ' + forfeitingTeam.team + ' forfeited · Opponent awarded 3-0</div>';
+    } else if (m.swept) {
       html += '<div class="sweep-note">&#127942; ' + (m.g1 === 'a' ? mu.a : mu.b) + ' won Games 1 &amp; 2 &mdash; Game 3 auto-awarded!</div>';
     }
     html += '</div></div>';
@@ -896,6 +903,7 @@ document.getElementById('match-list').addEventListener('click', function(e) {
 document.getElementById('week-sel').addEventListener('change', function() {
   curWeek = parseInt(this.value) || null;
   updateWeekStartControl();
+  updateForfeitControl();
   var ss = document.getElementById('slot-sel');
   var qr = document.getElementById('qs-row');
   if (!curWeek) {
@@ -914,6 +922,9 @@ document.getElementById('week-rainout-btn').addEventListener('click',function(){
 document.getElementById('week-undo-rainout-btn').addEventListener('click',function(){ if (curWeek) undoRainOutWeek(curWeek); });
 document.getElementById('week-reset-start-btn').addEventListener('click',function(){ if (curWeek) resetWeekStartDate(curWeek); });
 document.getElementById('week-makeup-btn').addEventListener('click',function(){ if (curWeek) setMakeupDate(curWeek); });
+document.getElementById('forfeit-team-btn').addEventListener('click',markTeamForfeit);
+document.getElementById('forfeit-undo-btn').addEventListener('click',undoTeamForfeit);
+document.getElementById('forfeit-team-select').addEventListener('change',updateForfeitControl);
 
 document.getElementById('slot-sel').addEventListener('change', function() {
   renderMatchups();
@@ -1004,13 +1015,15 @@ function getTeamSchedule(team){
         if (mu.a !== team && mu.b !== team) return;
         var side = mu.a === team ? 'a' : 'b';
         var opponent = side === 'a' ? mu.b : mu.a;
+        var teamForfeit = (leagueSettings.forfeits || []).some(function(item){ return Number(item.week) === w && item.team === team; });
+        var opponentForfeit = (leagueSettings.forfeits || []).some(function(item){ return Number(item.week) === w && item.team === opponent; });
         var match = getMatch(w,s,mi), wins = 0, losses = 0;
         [match.g1,match.g2,match.g3].forEach(function(winner){
           if (winner === side) wins++;
           else if (winner === 'a' || winner === 'b') losses++;
         });
         var played = wins + losses, complete = played === 3;
-        schedule.push({week:w,date:getWeekDate(w),round:s+1,opponent:opponent,board:mu.board,wins:wins,losses:losses,played:played,complete:complete});
+        schedule.push({week:w,date:getWeekDate(w),round:s+1,opponent:opponent,board:mu.board,wins:wins,losses:losses,played:played,complete:complete,teamForfeit:teamForfeit,opponentForfeit:opponentForfeit});
         if (!opponents[opponent]) opponents[opponent] = {scheduled:0,completed:0,wins:0,losses:0,matchWins:0,matchLosses:0};
         var history = opponents[opponent];
         history.scheduled++; history.wins += wins; history.losses += losses;
@@ -1059,7 +1072,9 @@ function renderTeamPage(){
     html += '<div class="team-week-block"><div class="team-week-label"><span>Week</span><strong>' + weekNumber + '</strong>' + (weekDate ? '<span class="team-week-date">' + weekDate + '</span>' : '') + '</div><div class="team-week-rounds">';
     html += weekGames.map(function(game){
       var resultText = 'Upcoming', resultClass = '';
-      if (game.complete) { resultText = (game.wins > game.losses ? 'W ' : 'L ') + game.wins + '-' + game.losses; resultClass = game.wins > game.losses ? ' win' : ' loss'; }
+      if (game.teamForfeit) { resultText = 'FORFEIT L 0-3'; resultClass = ' loss forfeit'; }
+      else if (game.opponentForfeit) { resultText = 'FORFEIT W 3-0'; resultClass = ' win forfeit'; }
+      else if (game.complete) { resultText = (game.wins > game.losses ? 'W ' : 'L ') + game.wins + '-' + game.losses; resultClass = game.wins > game.losses ? ' win' : ' loss'; }
       else if (game.played) { resultText = game.wins + '-' + game.losses; resultClass = ' progress'; }
       return '<div class="team-week-round"><div class="team-round-label">Round ' + game.round + '</div><div class="team-round-opponent">' + game.opponent + '<small>' + game.board + '</small></div><span class="team-result' + resultClass + '">' + resultText + '</span></div>';
     }).join('');
@@ -1332,6 +1347,7 @@ function applyLeagueSettings(settings) {
     actualWeekDates: Object.assign({},settings.actualWeekDates || leagueSettings.actualWeekDates || {}),
     calendarNotes: (settings.calendarNotes || leagueSettings.calendarNotes || DEFAULT_CALENDAR_NOTES).slice(),
     rainouts: (settings.rainouts || leagueSettings.rainouts || DEFAULT_RAINOUTS).slice(),
+    forfeits: (settings.forfeits || leagueSettings.forfeits || []).slice(),
     scheduleWeekMap: Object.assign({},settings.scheduleWeekMap || {}),
     week3MakeupRotationApplied: !!settings.week3MakeupRotationApplied,
     regularSeasonEnd: Object.prototype.hasOwnProperty.call(settings,'regularSeasonEnd') ? settings.regularSeasonEnd : leagueSettings.regularSeasonEnd
@@ -1514,6 +1530,59 @@ function setMakeupDate(week){
   alert('Week ' + week + ' makeup date set for ' + formatLeagueDate(makeupDate,false) + '.');
 }
 window.setMakeupDate = setMakeupDate;
+function updateForfeitControl(){
+  var control = document.getElementById('forfeit-control'), select = document.getElementById('forfeit-team-select'), undo = document.getElementById('forfeit-undo-btn');
+  if (!control || !select || !undo) return;
+  if (!ADMIN_MODE || !curWeek) { control.style.display = 'none'; return; }
+  control.style.display = 'grid';
+  var current = select.value;
+  select.innerHTML = '<option value="">Select absent team...</option>';
+  TEAMS.forEach(function(team){
+    var marked = (leagueSettings.forfeits || []).some(function(item){ return Number(item.week) === Number(curWeek) && item.team === team; });
+    var option = document.createElement('option'); option.value = team; option.textContent = team + (marked ? ' — FORFEIT' : ''); select.appendChild(option);
+  });
+  select.value = TEAMS.indexOf(current) >= 0 ? current : '';
+  var selectedMarked = (leagueSettings.forfeits || []).some(function(item){ return Number(item.week) === Number(curWeek) && item.team === select.value; });
+  undo.style.display = selectedMarked ? 'block' : 'none';
+}
+function markTeamForfeit(){
+  if (!ADMIN_MODE || !curWeek) return;
+  var select = document.getElementById('forfeit-team-select'), team = select && select.value;
+  if (!team) { alert('Select the team that did not show up.'); return; }
+  leagueSettings.forfeits = leagueSettings.forfeits || [];
+  if (leagueSettings.forfeits.some(function(item){ return Number(item.week) === Number(curWeek) && item.team === team; })) { alert(team + ' is already marked as a forfeit for Week ' + curWeek + '.'); return; }
+  if (!confirm('Mark ' + team + ' as a Week ' + curWeek + ' forfeit and award every scheduled game to their opponents?')) return;
+  var previousMatches = [];
+  for (var s=0; s<GPW; s++) {
+    getMatchups(curWeek-1,s).forEach(function(mu,mi){
+      if (mu.a !== team && mu.b !== team) return;
+      var opponent = mu.a === team ? mu.b : mu.a;
+      var opponentForfeit = leagueSettings.forfeits.some(function(item){ return Number(item.week) === Number(curWeek) && item.team === opponent; });
+      if (opponentForfeit) return;
+      var match = getMatch(curWeek,s,mi);
+      previousMatches.push({slot:s,match:mi,data:{g1:match.g1,g2:match.g2,g3:match.g3,swept:match.swept}});
+      var winner = mu.a === team ? 'b' : 'a';
+      match.g1 = winner; match.g2 = winner; match.g3 = winner; match.swept = true;
+    });
+  }
+  leagueSettings.forfeits.push({week:curWeek,team:team,previousMatches:previousMatches});
+  updateForfeitControl(); renderMatchups(); renderWeekStandings(); renderSeasonStandings(); renderTeamPage(); save();
+}
+function undoTeamForfeit(){
+  if (!ADMIN_MODE || !curWeek) return;
+  var select = document.getElementById('forfeit-team-select'), team = select && select.value;
+  var index = (leagueSettings.forfeits || []).findIndex(function(item){ return Number(item.week) === Number(curWeek) && item.team === team; });
+  if (index < 0) return;
+  var record = leagueSettings.forfeits[index];
+  if (!confirm('Undo the Week ' + curWeek + ' forfeit for ' + team + ' and restore the previous scores?')) return;
+  (record.previousMatches || []).forEach(function(item){
+    if (!results[curWeek]) results[curWeek] = {};
+    if (!results[curWeek][item.slot]) results[curWeek][item.slot] = {};
+    results[curWeek][item.slot][item.match] = item.data;
+  });
+  leagueSettings.forfeits.splice(index,1);
+  updateForfeitControl(); renderMatchups(); renderWeekStandings(); renderSeasonStandings(); renderTeamPage(); save();
+}
 function ensureWeekStarted(week){
   if (!week) return;
   leagueSettings.actualWeekDates = leagueSettings.actualWeekDates || {};
@@ -1573,6 +1642,7 @@ function rebuildWeekControls() {
   });
   if (curWeek && curWeek <= WEEKS && wsel) wsel.value = curWeek;
   if (baggerWeek && baggerWeek <= WEEKS && bwsel) bwsel.value = baggerWeek;
+  updateForfeitControl();
 }
 function renderHolidayAdmin(){
   var list = document.getElementById('holiday-admin-list');
@@ -1683,6 +1753,7 @@ function resetForNewSeason(settings) {
     actualWeekDates: {},
     calendarNotes: [],
     rainouts: [],
+    forfeits: [],
     scheduleWeekMap: {},
     week3MakeupRotationApplied: true,
     regularSeasonEnd: ''
